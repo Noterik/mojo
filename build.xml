@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<project name="Mojo" default="build">
+
+	<property name="src.dir" value="src"/>
+	<property name="build.dir" value="build"/>
+    <property name="classes.dir" value="bin"/>
+	<property name="lib.dir" value="lib"/>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${classes.dir}" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<mkdir dir="${classes.dir}" />
+	</target>
+
+	<target name="compile" depends="init">
+	  <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on">
+	    <classpath>
+	        <path refid="classpath"/>
+	    </classpath>
+	  </javac>
+	</target>	
+
+	<target name="build" depends="clean,compile">
+		<delete file="${build.dir}/mojo.jar"/>
+		<jar jarfile="${build.dir}/mojo.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Built-By" value="Noterik B.V."/>
+			</manifest>
+		</jar>
+	</target>
+</project>
