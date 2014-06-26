@@ -34,6 +34,8 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 //import org.springfield.lou.homer.LazyHomer;
 import org.springfield.mojo.http.HttpHelper;
+import org.springfield.mojo.interfaces.ServiceInterface;
+import org.springfield.mojo.interfaces.ServiceManager;
 
 /**
  * FSListManager
@@ -105,6 +107,14 @@ public class FSListManager {
 		String nodes = "";
 		if (path.indexOf("http://")==-1) {
 //danielfix			nodes = LazyHomer.sendRequestBart("GET",path,xml,"text/xml");
+			ServiceInterface smithers = ServiceManager.getService("smithers");
+			if (smithers==null) {
+				System.out.println("org.springfield.fs.FSListManager : service not found smithers");
+				return null;
+			}
+			nodes = smithers.get(path,xml,"text/xml");
+			if (nodes!=null) System.out.println("NODES MEMORY SIZE="+nodes.length());
+			
 		} else {
 			nodes = HttpHelper.sendRequest("GET", path, "text/xml", "text/xml").toString();
 			path = path.substring(path.indexOf("/domain/"));

@@ -99,7 +99,7 @@ public class FSList {
 		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
 			FsNode n = (FsNode)iter.next();	
 			if (n.getPath().equals(path)) {
-				System.out.println("FOUND="+n.getPath()+" "+path);
+			//	System.out.println("FOUND="+n.getPath()+" "+path);
 				return n;
 			}
 		}
