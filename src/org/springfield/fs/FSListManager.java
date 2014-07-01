@@ -64,6 +64,19 @@ public class FSListManager {
 		return list;
 	}
 	
+	public static FSList get(String uri,int depth,boolean cache) {
+		// see if we already have it loaded
+		System.out.println("GET ="+uri+" "+depth);
+		FSList list = null;
+		if (cache) list = lists.get(uri);
+		if (list==null && uri.indexOf("*")==-1) {
+			List<FsNode> l=getNodes(uri,depth,0,0);
+			list = new FSList(uri,l);
+			lists.put(uri, list);
+		}
+		return list;
+	}
+	
 	public static FSList add(String uri, FSList biglist) {
 		List<FsNode> nodes=getNodes(uri,2,0,0);
 		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
@@ -112,8 +125,13 @@ public class FSListManager {
 				System.out.println("org.springfield.fs.FSListManager : service not found smithers");
 				return null;
 			}
+			//System.out.println("GET MEM="+path);
 			nodes = smithers.get(path,xml,"text/xml");
-			if (nodes!=null) System.out.println("NODES MEMORY SIZE="+nodes.length());
+			if (nodes!=null) {
+				//System.out.println("NODES MEMORY SIZE="+nodes.length()+" PATH="+path);
+			} else {
+				System.out.println("EMPTY GET ON="+path);
+			}
 			
 		} else {
 			nodes = HttpHelper.sendRequest("GET", path, "text/xml", "text/xml").toString();

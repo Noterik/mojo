@@ -8,7 +8,7 @@ public class ServiceManager {
 	private static ServiceManager instance;
 
 		public static ServiceInterface getService(String name) {
-			System.out.println("GET SERVICE INTERFACE = "+name+" M="+instance);
+			//System.out.println("GET SERVICE INTERFACE = "+name+" M="+instance);
 			ServiceInterface s = services.get(name);
 			return s;
 		}
