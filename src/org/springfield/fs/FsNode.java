@@ -167,8 +167,9 @@ public class FsNode implements Comparable<FsNode>  {
 		xml += ">";
 		
 		xml += "<properties";
-		if(!this.getKeys().hasNext()){
-			xml += " /";
+		if(!this.getKeys().hasNext()){ // weird code daniel, so weird fix
+			xml += "/></" + this.getName() + ">";
+			return xml;
 		}
 		xml += ">";
 		

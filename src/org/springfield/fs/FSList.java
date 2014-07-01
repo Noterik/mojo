@@ -225,6 +225,42 @@ public class FSList {
 		return result;
 	}
 	
+	public List<FsNode> getNodesById(String id) {
+		// create a sublist based on input
+		List<FsNode> result = new ArrayList<FsNode>();
+		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
+			FsNode n = (FsNode)iter.next();	
+			if (n.getId().equals(id)) {
+				result.add(n);
+			}
+		}
+		return result;
+	}
+	
+	public List<FsNode> getNodesByNameMatch(String searchkey) {
+		// create a sublist based on input
+		List<FsNode> result = new ArrayList<FsNode>();
+		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
+			FsNode n = (FsNode)iter.next();	
+			if (n.getName().indexOf(searchkey)!=-1) {
+				result.add(n);
+			}
+		}
+		return result;
+	}
+	
+	public List<FsNode> getNodesByIdMatch(String searchkey) {
+		// create a sublist based on input
+		List<FsNode> result = new ArrayList<FsNode>();
+		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
+			FsNode n = (FsNode)iter.next();	
+			if (n.getId().indexOf(searchkey)!=-1) {
+				result.add(n);
+			}
+		}
+		return result;
+	}
+	
 	// give a list of a type but filter on searchkey
 	public List<FsNode> getNodesByName(String name,String searchlabel,String searchkey) {
 		// create a sublist based on input

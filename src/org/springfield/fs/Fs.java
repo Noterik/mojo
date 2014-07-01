@@ -30,7 +30,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
-//import org.springfield.lou.homer.LazyHomer;
 
 import org.springfield.mojo.http.HttpHelper;
 import org.springfield.mojo.interfaces.*;
@@ -48,21 +47,20 @@ public class Fs {
 	private static String[] ignorelist = {"rawvideo","screens"};
 
 	public static FsNode getNode(String path) {
+		System.out.println("MOJO GETNODE");
 		FsNode result = new FsNode();
 		result.setPath(path);
 		path += "/properties";
 		String xml = "<fsxml><properties><depth>0</depth></properties></fsxml>";
-// danielfix		String node = LazyHomer.sendRequestBart("GET",path,xml,"text/xml");
-		
-		
 		
 		ServiceInterface smithers = ServiceManager.getService("smithers");
 		if (smithers==null) {
 			System.out.println("org.springfield.fs.Fs : service not found smithers");
 			return null;
 		}
-		String node = smithers.get(path,xml,"text/xml");
 		
+		String node = smithers.get(path,xml,"text/xml");
+		System.out.println("RESULT="+node);
 				
 		if (node.indexOf("<error id=\"404\">")!=-1) {
 			return null; // node not found
@@ -174,8 +172,31 @@ public class Fs {
 	}
 	
 	public static void setProperty(String path,String name,String value) {
+		ServiceInterface smithers = ServiceManager.getService("smithers");
+		if (smithers==null) {
+			System.out.println("org.springfield.fs.Fs : service not found smithers");
+			return;
+		}
+		
 		String postpath = path+"/properties/"+name;
 		// danielfix LazyHomer.sendRequest("PUT",postpath,value,"text/xml");
+		String node = smithers.put(postpath,value,"text/xml");
+	}
+	
+
+	public static boolean insertNode(FsNode node) {
+		String  body = "<fsxml>";
+		body += node.asXML();
+		body += "</fsxml>";
+		System.out.println("SAVE NODE = "+node.getPath()+" "+node.getName()+" "+node.getId()+" "+body);
+		ServiceInterface smithers = ServiceManager.getService("smithers");
+		if (smithers==null) {
+			System.out.println("org.springfield.fs.Fs : service not found smithers");
+			return false;
+		}
+		String result = smithers.put(node.getPath()+"/properties",body,"text/xml");
+		System.out.println("RESULT="+result);
+		return true;
 	}
 	
 	public static Iterator<String> changedProperties(FsNode node1,FsNode node2) {
