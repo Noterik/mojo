@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -158,7 +159,7 @@ public class HttpHelper {
 	}
 	
 	/**
-	  * Sends a standard HTTP request to the specified URI using the determined method.
+	 * Sends a standard HTTP request to the specified URI using the determined method.
 	 * Attaches the content, uses the specified content type, sets cookies and timeout
 	 *  
 	 * @param method - the request method
@@ -171,6 +172,25 @@ public class HttpHelper {
 	 * @return response
 	 */
 	public static Response sendRequest(String method, String uri, String body, String contentType, String cookies, int timeout, String charSet) {
+		return sendRequest(method, uri, body, contentType, cookies, timeout, charSet, null);
+	}
+	
+	/**
+	 * Sends a standard HTTP request to the specified URI using the determined method.
+	 * Attaches the content, uses the specified content type, sets cookies, timeout and
+	 * request headers
+	 *  
+	 * @param method - the request method
+	 * @param uri - the uri to request
+	 * @param body - the content  
+	 * @param contentType - the content type
+	 * @param cookies - cookies
+	 * @param timeout - timeout in milliseconds
+	 * @param charSet - the character set
+	 * @param requestHeaders - extra user defined headers
+	 * @return response
+	 */
+	public static Response sendRequest(String method, String uri, String body, String contentType, String cookies, int timeout, String charSet, Map<String, String> requestHeaders) {
 		// http client
 		HttpClient client = new HttpClient();
 
@@ -222,8 +242,19 @@ public class HttpHelper {
 		}
 
 		// add cookies
-		if (cookies != null)
+		if (cookies != null) {
 			reqMethod.addRequestHeader("Cookie", cookies);
+		}
+		
+		// add custom headers
+		if (requestHeaders != null) {
+			for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
+				String name = header.getKey();
+				String value = header.getValue();
+				
+				reqMethod.addRequestHeader(name, value);
+			}
+		}
 		
 		Response response = new Response();
 		
