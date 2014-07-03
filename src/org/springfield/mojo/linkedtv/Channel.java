@@ -22,10 +22,16 @@ package org.springfield.mojo.linkedtv;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Node;
 import org.springfield.fs.FSList;
 import org.springfield.fs.FsNode;
 import org.springfield.mojo.http.HttpHelper;
@@ -40,7 +46,7 @@ import org.springfield.mojo.http.Response;
  * 
  */
 public class Channel {
-	private static String API = "http://api.linkedtv.eu/mediaresource?";
+	private static String API = "http://api.linkedtv.eu/mediaresource?status=6&";
 	private static String API_USER = "admin";
 	private static String API_PASSWORD = "linkedtv";
 	private static String API_AUTHORIZATION = API_USER+":"+API_PASSWORD;
@@ -50,6 +56,7 @@ public class Channel {
 	
 	private String domain;
 	private String channel;
+	private String channelXml;
 	
 	public Channel() {
 		
@@ -65,11 +72,13 @@ public class Channel {
 			} catch (UnsupportedEncodingException e) {
 				
 			}
-			String uri = API+"publisher="+channel+"&status=6";
+			String uri = API+"publisher="+channel;
 			
 			HashMap<String, String> requestHeaders = new HashMap<String, String>();
 			requestHeaders.put("Authorization", "Basic "+new String(API_AUTHORIZATION_ENCODED));
 			requestHeaders.put("Accept", "application/xml");
+			
+			System.out.println("GET uri "+uri);
 			
 			Response response = HttpHelper.sendRequest("GET", uri, null, "application/xml", null, -1, CHARACTER_SET, requestHeaders);
 			
@@ -77,18 +86,48 @@ public class Channel {
 			System.out.println("response "+response.toString());
 			
 			if (response.getStatusCode() == 200) {
-				
+				channelXml = response.getResponse();
 			}
 		}
 	}
 	
-	public FSList getEpisodes() {
-		
-		return new FSList();
+	public List<Episode> getEpisodes() {
+		try {
+			Document doc = DocumentHelper.parseText(channelXml);			
+			
+			List<Node> nodes = doc.selectNodes("//mediaresources/mediaresource");
+			ArrayList<Episode> episodes = new ArrayList<Episode>();
+			
+			for (Node node : nodes) {
+				String id = node.selectSingleNode("id") == null ? null :  node.selectSingleNode("id").getText();
+				if (id != null) {
+					episodes.add(new Episode(id));
+				}
+			}			
+			return episodes;
+		} catch (DocumentException e) {
+			return new ArrayList<Episode>();
+		}
 	}
 	
-	public FsNode getLatestEpisode() {
-		
-		return new FsNode();
+	public Episode getLatestEpisode() {
+		try {
+			Document doc = DocumentHelper.parseText(channelXml);
+			
+			List<Node> nodes = doc.selectNodes("//mediaresources/mediaresource");
+			
+			if (nodes.size() > 0) {
+				Node node = nodes.get(0);
+				String id = node.selectSingleNode("id") == null ? null :  node.selectSingleNode("id").getText();
+				if (id != null) {
+					return new Episode(id);
+				}
+			}
+			
+			return new Episode();
+		} catch (DocumentException e) {
+			return new Episode();
+		}
 	}
+
 }

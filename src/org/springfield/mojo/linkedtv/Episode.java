@@ -92,6 +92,10 @@ public class Episode {
 		}
 	}
 	
+	public String getMediaResourceId() {
+		return mediaResourceId;
+	}
+	
 	public String getStillsUri() {
 		return stillsUri;
 	}
