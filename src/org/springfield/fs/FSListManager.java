@@ -66,7 +66,7 @@ public class FSListManager {
 	
 	public static FSList get(String uri,int depth,boolean cache) {
 		// see if we already have it loaded
-		System.out.println("GET ="+uri+" "+depth);
+		//System.out.println("GET ="+uri+" "+depth);
 		FSList list = null;
 		if (cache) list = lists.get(uri);
 		if (list==null && uri.indexOf("*")==-1) {
@@ -163,7 +163,7 @@ public class FSListManager {
 										String pname = p3.getName();
 										String pvalue = p3.getText();
 										//System.out.println("NODE NAME="+pname+" "+pvalue);
-										nn.setProperty(pname, pvalue);
+										nn.setProperty(pname, FsEncoding.decode(pvalue));
 									}
 								}
 							}
@@ -196,7 +196,7 @@ public class FSListManager {
 											Element p3 = (Element)o;
 											String pname = p3.getName();
 											String pvalue = p3.getText();
-											nn.setProperty(pname, pvalue);
+											nn.setProperty(pname, FsEncoding.decode(pvalue));
 										}
 									}
 								}

@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="lib/org.apache.commons.httpclient.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.commons.codec.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="/Users/scb2/Documents/workspace_github/Mojo/lib/commons-net-1.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

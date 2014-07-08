@@ -22,6 +22,7 @@
 package org.springfield.fs;
 
 import java.util.*;
+import org.springfield.fs.*;
 
 //import org.springfield.lou.homer.LazyHomer;
 // still has to get a license
@@ -130,6 +131,26 @@ public class FsNode implements Comparable<FsNode>  {
 	public Iterator<String> getKeys() {
 		return properties.keySet().iterator();
 	}
+	public String getPropertiesXML() {
+		return getPropertiesXML(false);
+	}
+	
+	
+	public String getPropertiesXML(boolean fsencode) {
+			String xml="<properties>";
+			for(Iterator<String> i = this.getKeys(); i.hasNext();){
+				String key = i.next();
+				String value = getProperty(key);
+				if (fsencode) value = FsEncoding.encode(value);
+				if (value.contains("&") || value.contains("<")) {
+					xml+="<"+key+"><![CDATA["+value+"]]></"+key+">\n";
+				} else {
+					xml+="<"+key+">"+value+"</"+key+">\n";
+				}
+			}
+			xml+="</properties>";
+			return xml;
+	}
 	
 	public int compareTo(FsNode n) throws ClassCastException {
 		 Float f1 = getStarttime();
@@ -159,6 +180,8 @@ public class FsNode implements Comparable<FsNode>  {
 		return result;
 	}
 	
+	
+	
 	public String asXML(){
 		String xml = "<" + this.getName() + " id=\"" + this.getId() + "\"";
 		if(this.getReferid() != null){
@@ -175,9 +198,12 @@ public class FsNode implements Comparable<FsNode>  {
 		
 		for(Iterator<String> i = this.getKeys(); i.hasNext();){
 			String key = i.next();
-			xml += "<" + key + ">";
-			xml += this.getProperty(key);
-			xml += "</" + key + ">";
+			String value = getProperty(key);
+			if (value.contains("&") || value.contains("<")) {
+				xml+="<"+key+"><![CDATA["+value+"]]></"+key+">\n";
+			} else {
+				xml+="<"+key+">"+value+"</"+key+">\n";
+			}
 		}
 		
 		xml += "</properties>";

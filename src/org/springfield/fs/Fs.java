@@ -47,7 +47,6 @@ public class Fs {
 	private static String[] ignorelist = {"rawvideo","screens"};
 
 	public static FsNode getNode(String path) {
-		System.out.println("MOJO GETNODE");
 		FsNode result = new FsNode();
 		result.setPath(path);
 		path += "/properties";
@@ -60,13 +59,13 @@ public class Fs {
 		}
 		
 		String node = smithers.get(path,xml,"text/xml");
-		System.out.println("RESULT="+node);
 				
 		if (node.indexOf("<error id=\"404\">")!=-1) {
 			return null; // node not found
 		}
  		try { 
 			Document doc = DocumentHelper.parseText(node);
+			//System.out.println("RAWNODE="+node);
 			for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 				Element p = (Element)iter.next();
 				result.setName(p.getName());
@@ -83,7 +82,7 @@ public class Fs {
 							if (p3 instanceof Element) {
 								String pname = ((Element)p3).getName();
 								String pvalue = ((Element)p3).getText();
-								result.setProperty(pname, pvalue);
+								result.setProperty(pname,FsEncoding.decode(pvalue));
 							} else {
 								
 							}
@@ -117,8 +116,12 @@ public class Fs {
 		if (path.indexOf("http://")==-1) {
 		// danielfix	nodes = LazyHomer.sendRequestBart("GET",path,xml,"text/xml");
 		} else {
-			nodes = HttpHelper.sendRequest("GET", path, "text/xml", "text/xml").toString();
-			//System.out.println("FEEDBACK="+nodes);
+			ServiceInterface smithers = ServiceManager.getService("smithers");
+			if (smithers==null) {
+				System.out.println("org.springfield.fs.Fs : service not found smithers");
+				return null;
+			}
+			smithers.get(path,xml,"text/xml");
 			path = path.substring(path.indexOf("/domain/"));
 		}
  		try { 
@@ -135,7 +138,7 @@ public class Fs {
 					}
 				}
 			} else {
-				System.out.println("IS SUBNODE");
+				//System.out.println("IS SUBNODE");
 				for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 					Element node = (Element)iter.next();
 					for(Iterator<Node> iter2 = node.nodeIterator(); iter2.hasNext(); ) {
@@ -155,7 +158,7 @@ public class Fs {
 											Element p3 = (Element)o;
 											String pname = p3.getName();
 											String pvalue = p3.getText();
-											nn.setProperty(pname, pvalue);
+											nn.setProperty(pname, FsEncoding.decode(pvalue));
 										}
 									}
 								}
