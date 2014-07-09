@@ -127,8 +127,10 @@ public class Episode {
 			try {
 				Document doc = DocumentHelper.parseText(response.toString());
 				List<Node> nodes = doc.selectNodes("//annotations/*");
+				String presentationUri = doc.selectSingleNode("properties/presentation") == null ? "" : doc.selectSingleNode("properties/presentation").getText();
+				presentationUri += "annotations";
 				
-				FSList annotations = new FSList();
+				FSList annotations = new FSList(presentationUri);
 				
 				for (Node annotation : nodes) {
 					Element a = (Element) annotation;
@@ -137,7 +139,7 @@ public class Episode {
 					result.setName(a.getName());
 					result.setId(a.attribute("id").getText());
 					
-					List<Node> properties = a.selectNodes("properties");
+					List<Node> properties = a.selectNodes("properties/*");
 					for (Node property : properties) {
 						result.setProperty(property.getName(), property.getText());
 					}
@@ -160,8 +162,10 @@ public class Episode {
 			try {
 				Document doc = DocumentHelper.parseText(response.toString());
 				List<Node> nodes = doc.selectNodes("//chapter");
+				String presentationUri = doc.selectSingleNode("properties/presentation") == null ? "" : doc.selectSingleNode("properties/presentation").getText();
+				presentationUri += "chapters";
 				
-				FSList chapters = new FSList();
+				FSList chapters = new FSList(presentationUri);
 				
 				for (Node chapter : nodes) {
 					Element c = (Element)chapter;					
@@ -170,7 +174,7 @@ public class Episode {
 					result.setName(c.getName());
 					result.setId(c.attribute("id").getText());
 					
-					List<Node> properties = c.selectNodes("properties");
+					List<Node> properties = c.selectNodes("properties/*");
 					for (Node property : properties) {
 						result.setProperty(property.getName(), property.getText());
 					}					
