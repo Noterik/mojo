@@ -47,6 +47,19 @@ public class FsNode implements Comparable<FsNode>  {
 	private String asindex;
 	
 	private Map<String, String> properties = new HashMap<String, String>();
+	
+	public FsNode() {
+		setName("unknown"); // set to default value should be set later
+	}
+	
+	public FsNode(String name) {
+		setName(name);
+	}
+	
+	public FsNode(String name,String id) {
+		setName(name);
+		setId(id);
+	}
 
 	public void setPath(String p) {
 		path = p;
@@ -184,6 +197,9 @@ public class FsNode implements Comparable<FsNode>  {
 	
 	public String asXML(){
 		String xml = "<" + this.getName() + " id=\"" + this.getId() + "\"";
+		if (this.getId()==null) {
+			xml = "<" + this.getName() + " ";
+		}
 		if(this.getReferid() != null){
 			xml += " referid=\"" + this.getReferid() + "\"";
 		}

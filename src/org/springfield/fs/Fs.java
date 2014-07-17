@@ -187,18 +187,27 @@ public class Fs {
 	}
 	
 
-	public static boolean insertNode(FsNode node) {
+	public static boolean insertNode(FsNode node,String insertpath) {
 		String  body = "<fsxml>";
 		body += node.asXML();
 		body += "</fsxml>";
-		System.out.println("SAVE NODE = "+node.getPath()+" "+node.getName()+" "+node.getId()+" "+body);
+		//System.out.println("SAVE NODE = "+node.getPath()+" "+node.getName()+" "+node.getId()+" "+body);
 		ServiceInterface smithers = ServiceManager.getService("smithers");
 		if (smithers==null) {
 			System.out.println("org.springfield.fs.Fs : service not found smithers");
 			return false;
 		}
-		String result = smithers.put(node.getPath()+"/properties",body,"text/xml");
-		System.out.println("RESULT="+result);
+		if (node.getName()==null) {
+			return false;
+		}
+		if (node.getId()==null) {
+			String result = smithers.put(insertpath+"/"+node.getName()+"/"+node.getId()+"/properties",body,"text/xml");
+			//String result = smithers.post(node.getPath()-id,body,"text/xml");
+			System.out.println("INSERT PUT NODE RESULT="+result);
+		} else {
+			String result = smithers.post(insertpath+"/"+node.getName(),body,"text/xml");
+			System.out.println("INSET POST NODE RESULT="+result);			
+		}
 		return true;
 	}
 	
