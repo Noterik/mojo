@@ -200,13 +200,12 @@ public class Fs {
 		if (node.getName()==null) {
 			return false;
 		}
-		if (node.getId()==null) {
-			String result = smithers.put(insertpath+"/"+node.getName()+"/"+node.getId()+"/properties",body,"text/xml");
-			//String result = smithers.post(node.getPath()-id,body,"text/xml");
-			System.out.println("INSERT PUT NODE RESULT="+result);
+		if (node.getId()!=null) {
+			String result = smithers.put(insertpath+"/properties",body,"text/xml");
+			if (result.indexOf("<error id")!=-1) { return false; }
 		} else {
 			String result = smithers.post(insertpath+"/"+node.getName(),body,"text/xml");
-			System.out.println("INSET POST NODE RESULT="+result);			
+			if (result.indexOf("<error id")!=-1) { return false; }			
 		}
 		return true;
 	}
