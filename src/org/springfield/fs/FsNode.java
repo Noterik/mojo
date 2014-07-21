@@ -210,6 +210,22 @@ public class FsNode implements Comparable<FsNode>  {
 		return list;
 	}
 	
+	public boolean checkActions(String asker,String type,int depth,String actions) {
+		
+		// check if it has the actions we need to check, travel up if needed
+		ArrayList<String> allowedactions = allowedActions(asker,type);
+		
+		String[] wantedactions = actions.split(":");
+		for (int i=0;i<wantedactions.length;i++) {
+			if (!allowedactions.contains(wantedactions[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
+	
 	private boolean readAllowedForUser(String user) {
 		String accessline = this.getAccessProperty("read");
 		if (accessline!=null) {
