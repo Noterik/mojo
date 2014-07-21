@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 public class URIParser {
 
-	private static Logger logger = Logger.getLogger(URIParser.class);
+	//private static Logger logger = Logger.getLogger(URIParser.class);
 	
 	/**
 	 * Returns the last part of the given URI
@@ -245,7 +245,7 @@ public class URIParser {
 			curUriObj = new URI(currentWorkingUri);
 			uriObj = curUriObj.resolve(uri);
 		} catch (URISyntaxException e) {
-			logger.error("",e);
+			//logger.error("",e);
 		}
 		if(uriObj!=null) {
 			return uriObj.toString();

@@ -45,10 +45,15 @@ public class Episode {
 	private static String BART = "http://bart2.noterik.com/bart";
 	
 	private String mediaResourceId;
+	private String presentationId;
 	private String title;
 	private String baseLocator;
 	private String stillsUri;
 	private int duration;
+	
+	private FSList annotations;
+	private FSList chapters;
+	private FSList enrichments;
 	
 	public Episode() {
 		
@@ -66,7 +71,8 @@ public class Episode {
 				
 				title = doc.selectSingleNode("//properties/presentationtitle") == null ? "" : doc.selectSingleNode("//properties/presentationtitle").getText();
 				baseLocator = doc.selectSingleNode("//locator/@href") == null ? "" : doc.selectSingleNode("//locator/@href").getText();
-				
+				presentationId = doc.selectSingleNode("//properties/presentation") == null ? "" : doc.selectSingleNode("//properties/presentation").getText();
+
 				//Ask video for some details
 				if (baseLocator.indexOf("/domain/") != -1) {
 					String videoLocation = baseLocator.substring(baseLocator.indexOf("/domain/"));
@@ -83,11 +89,11 @@ public class Episode {
 						stillsUri = d.selectSingleNode("//screens[@id='1']/properties/uri") == null ? null : d.selectSingleNode("//screens[@id='1']/properties/uri").getText();
 						
 					} catch (DocumentException e) {
-						
+						System.out.println("What? "+e.getMessage());
 					}
 				}
 			} catch (DocumentException e) {
-				
+				System.out.println("What? "+e.getMessage());
 			}			
 		}
 	}
@@ -106,7 +112,7 @@ public class Episode {
 	
 	public String getStreamUri() {
 		//TODO: integrate ticket engine
-		return baseLocator+"raw/4/raw.mp4";
+		return baseLocator+"rawvideo/4/raw.mp4";
 	}
 	
 	public String getStreamuri(int quality) {
@@ -118,10 +124,16 @@ public class Episode {
 		return title;
 	}
 	
+	public String getPresentationId() {
+		return presentationId;
+	}
+	
 	public FSList getAnnotations() {
 		Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId+"&annotations&curated&renew");
+		this.annotations = new FSList();
 		
 		if (response.getStatusCode() != 200) {
+			System.out.println("What? "+response.getStatusCode());
 			return new FSList();
 		} else {
 			try {
@@ -145,9 +157,11 @@ public class Episode {
 					}
 					annotations.addNode(result);
 				}
+				this.annotations = annotations;
 				return annotations;
 				
 			} catch (DocumentException e) {
+				System.out.println("Statuscode = "+response.getStatusCode());
 				return new FSList();
 			}
 		}
@@ -155,8 +169,10 @@ public class Episode {
 	
 	public FSList getChapters() {
 		Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId+"&chapters");
+		this.chapters = new FSList();
 		
 		if (response.getStatusCode() != 200) {
+			System.out.println("Statuscode = "+response.getStatusCode());
 			return new FSList();
 		} else {
 			try {
@@ -179,12 +195,82 @@ public class Episode {
 						result.setProperty(property.getName(), property.getText());
 					}					
 					chapters.addNode(result);
-				}				
+				}
+				this.chapters = chapters;
 				return chapters;
 				
 			} catch (DocumentException e) {
+				System.out.println("What? "+e.getMessage());
 				return new FSList();
 			}
 		}		
+	}
+	
+	public FSList getAnnotationsFromChapter(FsNode chapter) {
+		if (chapter != null) {
+			if (this.annotations == null) {
+				System.out.println("getting annotations");
+				getAnnotations();
+			}
+			
+			FSList annotations = new FSList("chapter/"+chapter.getId());
+			
+			float start = chapter.getStarttime();
+			float duration = chapter.getDuration();
+			
+			List<FsNode> nodes = this.annotations.getNodes();
+			
+			for (FsNode node : nodes) {
+				if (node != null) {					
+					if (node.getStarttime() >= start && node.getStarttime() <= start+duration) {
+						annotations.addNode(node);
+					}
+				}
+			}
+			return annotations;
+		} else {
+			System.out.println("Empty chapter");
+		}
+		return new FSList();
+	}
+	
+	public FSList getEnrichmentsFromAnnotation(FsNode annotation) {
+		if (annotation != null) {		
+			Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+annotation.getId()+"&enrichments");
+			
+			if (response.getStatusCode() != 200) {
+				System.out.println("Statuscode = "+response.getStatusCode());
+				return new FSList();
+			} else {
+				try {
+					Document doc = DocumentHelper.parseText(response.toString());
+					List<Node> nodes = doc.selectNodes("//enrichment");
+					
+					FSList enrichments = new FSList("annotation/"+annotation.getId());
+					
+					for (Node enrichment : nodes) {
+						Element c = (Element)enrichment;					
+						FsNode result = new FsNode();
+						
+						result.setName(c.getName());
+						result.setId(c.attribute("id").getText());
+						
+						List<Node> properties = c.selectNodes("properties/*");
+						for (Node property : properties) {
+							result.setProperty(property.getName(), property.getText());
+						}					
+						enrichments.addNode(result);
+					}					
+					this.enrichments = new FSList();
+					return enrichments;
+				} catch (DocumentException e) {
+					System.out.println("What? "+e.getMessage());
+					return new FSList();
+				}
+			}
+		} else {
+			System.out.println("Empty annotation");
+		}
+		return new FSList();		
 	}
 }

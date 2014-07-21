@@ -28,7 +28,7 @@ import org.springfield.mojo.http.HttpHelper;
 public class FtpHelper {
 
 	/** the FtpHelper's log4j logger */
-	private static Logger logger = Logger.getLogger(FtpHelper.class);
+	//private static Logger logger = Logger.getLogger(FtpHelper.class);
 	
 	/**
 	 * Send file to ftp server
@@ -83,7 +83,8 @@ public class FtpHelper {
 			// transfer
 			isOk = commonsGetFile(host, user, pw, rFolder, localDir, filename);
 		} else {
-			logger.error("The local directory does not exist: " + localDir);
+			//logger.error("The local directory does not exist: " + localDir);
+			System.out.println("Error: The local directory does not exist: " + localDir);
 		}
 		return isOk;
 	}
@@ -129,26 +130,26 @@ public class FtpHelper {
 			// check if connected
 			reply = ftp.getReplyCode();
 			if(!FTPReply.isPositiveCompletion(reply)) {
-				logger.info("Could not connect to " + server + ".");
-				logger.info("Reply code: "+reply);
+				//logger.info("Could not connect to " + server + ".");
+				//logger.info("Reply code: "+reply);
 				ftp.disconnect();
 				return false;
 			}
 
-			logger.info("Connected to " + server + ".");
-			logger.info(ftp.getReplyString());
+			//logger.info("Connected to " + server + ".");
+			//logger.info(ftp.getReplyString());
 			 
 			// goto remote folder
 			succes = ftp.changeWorkingDirectory( rFolder );			
 			if(!succes) {
 				reply = ftp.getReplyCode();
 				ftp.disconnect();
-				logger.info("Could not change working directory to " + rFolder + ".");
-				logger.info("Reply code: "+reply);
+				//logger.info("Could not change working directory to " + rFolder + ".");
+				//logger.info("Reply code: "+reply);
 				return false;
 			}
 			
-			logger.info("Changed working directory to " + rFolder + ".");
+			//logger.info("Changed working directory to " + rFolder + ".");
 			
 			// download file
 			File file = new File( lFolder + File.separator + lFilename );
@@ -164,17 +165,17 @@ public class FtpHelper {
 			if(!succes) {
 				reply = ftp.getReplyCode();
 				ftp.disconnect();
-				logger.info("Downloading failed for file " + rFilename + ".");
-				logger.info("Reply code: "+reply);
+				//logger.info("Downloading failed for file " + rFilename + ".");
+				//logger.info("Reply code: "+reply);
 				return false;
 			}
 			
-			logger.info("Downloading completed for file " + rFilename + ".");
+			//logger.info("Downloading completed for file " + rFilename + ".");
 			
 			// logout
 			ftp.logout();
 		} catch(Exception e) {
-			logger.error("",e);
+			//logger.error("",e);
 			return false;
 		} finally {
 			// disconnect
@@ -185,18 +186,18 @@ public class FtpHelper {
 					}
 				}
 			} catch(Exception e) {
-				logger.error("",e);
+				//logger.error("",e);
 			}
 		}
 		return true;
 	}
 	
 	private static boolean commonsGetFile(FTPClient client, String lFilename, String rFilename) {
-		logger.info("Downloading file " + rFilename + ".");
+		//logger.info("Downloading file " + rFilename + ".");
 		
 		// check if client is connected
 		if(!client.isConnected()) {
-			logger.error("ftp client was not connected");
+			//logger.error("ftp client was not connected");
 			return false;
 		}
 		
@@ -207,16 +208,16 @@ public class FtpHelper {
 			fos.close();
 			if(!succes) {
 				int reply = client.getReplyCode();
-				logger.info("Downloading failed for file " + rFilename + ".");
-				logger.info("Reply code: "+reply);
+				//logger.info("Downloading failed for file " + rFilename + ".");
+				//logger.info("Reply code: "+reply);
 				return false;
 			}
 		} catch(Exception e) {
-			logger.error("",e);
+			//logger.error("",e);
 			return false;
 		}
 		
-		logger.info("Downloading finished for file " + rFilename + ".");
+		//logger.info("Downloading finished for file " + rFilename + ".");
 		return true;
 		
 	}
@@ -229,11 +230,11 @@ public class FtpHelper {
 		// check input folder
 		File lFolderFile = new File(lFolder);
 		if(!lFolderFile.exists()) {
-			logger.error("Local folder does not exist");
+			//logger.error("Local folder does not exist");
 			return false;
 		}
 		if(!lFolderFile.isDirectory()) {
-			logger.error("Local folder is not a directory");
+			//logger.error("Local folder is not a directory");
 			return false;
 		}
 		
@@ -248,11 +249,11 @@ public class FtpHelper {
 			// check if connected
 			reply = ftp.getReplyCode();
 			if(!FTPReply.isPositiveCompletion(reply)) {
-				logger.info("Could not connect to " + server + ".");
+				//logger.info("Could not connect to " + server + ".");
 				return false;
 			}
 
-			logger.info("Connected to " + server + ".");
+			//logger.info("Connected to " + server + ".");
 			
 			// get folder
 			success = commonsGetFolder(ftp, rFolder, lFolder);
@@ -260,7 +261,7 @@ public class FtpHelper {
 			// logout
 			ftp.logout();
 		} catch(Exception e) {
-			logger.error("",e);
+			//logger.error("",e);
 			return false;
 		} finally {
 			// disconnect
@@ -271,18 +272,18 @@ public class FtpHelper {
 					}
 				}
 			} catch(Exception e) {
-				logger.error("",e);
+				//logger.error("",e);
 			}
 		}
 		return success;
 	}
 	
 	private static boolean commonsGetFolder(FTPClient client, String rFolder, String lFolder) {
-		logger.info("Getting folder " + rFolder + ".");
+		//logger.info("Getting folder " + rFolder + ".");
 		
 		// check if client is connected
 		if(!client.isConnected()) {
-			logger.error("ftp client was not connected");
+			//logger.error("ftp client was not connected");
 			return false;
 		}
 		
@@ -313,7 +314,7 @@ public class FtpHelper {
 			// move back to parent folder
 			client.changeToParentDirectory();
 		} catch(Exception e) {
-			logger.error("Could not upload folder",e);
+			//logger.error("Could not upload folder",e);
 			return false;
 		}
 		return true;
@@ -353,16 +354,16 @@ public class FtpHelper {
 			// check if connected
 			reply = ftp.getReplyCode();
 			if(!FTPReply.isPositiveCompletion(reply)) {
-				logger.info("Could not connect to " + server + ".");
+				//logger.info("Could not connect to " + server + ".");
 				ftp.disconnect();
 				return false;
 			}
 
-			logger.info("Connected to " + server + ".");
+			//logger.info("Connected to " + server + ".");
 			
 			// remove the slash from the beginning of the uri
 			String noSlash = URIParser.removeFirstSlash(rFolder);
-			logger.debug("Removed the first slash from uri");
+			//logger.debug("Removed the first slash from uri");
 			
 			// goto remote folder (create the folder if necessary)
 			if( recursiveCreate ){
@@ -371,7 +372,7 @@ public class FtpHelper {
 				// strip the folder in parts and create them recursively
 				for( String part : parts ){
 					if( !(ftp.changeWorkingDirectory( part ) || (ftp.makeDirectory( part ) && ftp.changeWorkingDirectory( part ))) ){
-						logger.info("Could not create working directory: " + noSlash + ", specifically directory "+part);
+						//logger.info("Could not create working directory: " + noSlash + ", specifically directory "+part);
 						ftp.disconnect();				
 						return false;
 					}
@@ -379,12 +380,12 @@ public class FtpHelper {
 			}else{				
 				succes = ftp.changeWorkingDirectory( noSlash ) || (ftp.makeDirectory( noSlash ) && ftp.changeWorkingDirectory( noSlash ));
 				if(!succes) {
-					logger.info("Could not change working directory to " + noSlash + ".");
+					//logger.info("Could not change working directory to " + noSlash + ".");
 					ftp.disconnect();				
 					return false;
 				}
 			}
-			logger.info("Changed working directory to " + rFolder + ".");
+			//logger.info("Changed working directory to " + rFolder + ".");
 			
 			// upload file
 			File file = new File( lFolder + File.separator + lFilename );
@@ -394,17 +395,17 @@ public class FtpHelper {
 			if(!succes) {
 				reply = ftp.getReplyCode();
 				ftp.disconnect();
-				logger.info("Uploading failed for file " + lFilename + ".");
-				logger.info("Reply code: "+reply);
+				//logger.info("Uploading failed for file " + lFilename + ".");
+				//logger.info("Reply code: "+reply);
 				return false;
 			}
 			
-			logger.info("Uploading finished for file " + lFilename + ".");
+			//logger.info("Uploading finished for file " + lFilename + ".");
 			
 			// logout
 			ftp.logout();
 		} catch(Exception e) {
-			logger.error("",e);
+			//logger.error("",e);
 			return false;
 		} finally {
 			// disconnect
@@ -415,7 +416,7 @@ public class FtpHelper {
 					}
 				}
 			} catch(Exception e) {
-				logger.error("",e);
+				//logger.error("",e);
 			}
 		}
 		return true;
@@ -453,11 +454,11 @@ public class FtpHelper {
 		// check input folder
 		File lFolderFile = new File(lFolder);
 		if(!lFolderFile.exists()) {
-			logger.error("Local folder does not exist");
+			//logger.error("Local folder does not exist");
 			return false;
 		}
 		if(!lFolderFile.isDirectory()) {
-			logger.error("Local folder is not a directory");
+			//logger.error("Local folder is not a directory");
 			return false;
 		}
 		
@@ -472,15 +473,15 @@ public class FtpHelper {
 			// check if connected
 			reply = ftp.getReplyCode();
 			if(!FTPReply.isPositiveCompletion(reply)) {
-				logger.info("Could not connect to " + server + ".");
+				//logger.info("Could not connect to " + server + ".");
 				return false;
 			}
 
-			logger.info("Connected to " + server + ".");
+			//logger.info("Connected to " + server + ".");
 			
 			// remove the slash from the beginning of the uri
 			String noSlash = URIParser.removeFirstSlash(rFolder);
-			logger.debug("Removed the first slash from uri");
+			//logger.debug("Removed the first slash from uri");
 			if( recursiveCreate ) {
 				// goto remote folder (create the folder if necessary)
 				String[] parts = noSlash.split("/");
@@ -488,19 +489,19 @@ public class FtpHelper {
 				// strip the folder in parts and create them recursively
 				for( String part : parts ){
 					if( !(ftp.changeWorkingDirectory( part ) || (ftp.makeDirectory( part ) && ftp.changeWorkingDirectory( part ))) ){
-						logger.info("Could not create working directory: " + noSlash + ", specifically directory "+part);	
+						//logger.info("Could not create working directory: " + noSlash + ", specifically directory "+part);	
 						return false;
 					}
 				}
 			} else{				
 				succes = ftp.changeWorkingDirectory( noSlash ) || (ftp.makeDirectory( noSlash ) && ftp.changeWorkingDirectory( noSlash ));
 				if(!succes) {
-					logger.info("Could not change working directory to " + noSlash + ".");
+					//logger.info("Could not change working directory to " + noSlash + ".");
 					ftp.disconnect();				
 					return false;
 				}
 			}
-			logger.info("Changed working directory to " + rFolder + ".");
+			//logger.info("Changed working directory to " + rFolder + ".");
 			
 			// send folder
 			commonsSendFolder(ftp, lFolderFile);
@@ -508,7 +509,7 @@ public class FtpHelper {
 			// logout
 			ftp.logout();
 		} catch(Exception e) {
-			logger.error("",e);
+			//logger.error("",e);
 			return false;
 		} finally {
 			// disconnect
@@ -519,7 +520,7 @@ public class FtpHelper {
 					}
 				}
 			} catch(Exception e) {
-				logger.error("",e);
+				//logger.error("",e);
 			}
 		}
 		return true;
@@ -533,11 +534,11 @@ public class FtpHelper {
 	 * @return
 	 */
 	private static boolean commonsSendFolder(FTPClient client, File lFolderFile) {
-		logger.info("Uploading folder " + lFolderFile.getName() + ".");
+		//logger.info("Uploading folder " + lFolderFile.getName() + ".");
 		
 		// check if client is connected
 		if(!client.isConnected()) {
-			logger.error("ftp client was not connected");
+			//logger.error("ftp client was not connected");
 			return false;
 		}
 		
@@ -559,7 +560,7 @@ public class FtpHelper {
 			// return to parent folder
 			client.changeToParentDirectory();
 		} catch(Exception e) {
-			logger.error("Could not upload folder",e);
+			//logger.error("Could not upload folder",e);
 			return false;
 		}
 		return true;
@@ -574,11 +575,11 @@ public class FtpHelper {
 	 * @return
 	 */
 	private static boolean commonsSendFile(FTPClient client, File localFile, String remoteFilename) {
-		logger.info("Uploading file " + remoteFilename + ".");
+		//logger.info("Uploading file " + remoteFilename + ".");
 		
 		// check if client is connected
 		if(!client.isConnected()) {
-			logger.error("ftp client was not connected");
+			//logger.error("ftp client was not connected");
 			return false;
 		}
 		
@@ -589,16 +590,16 @@ public class FtpHelper {
 			fis.close();
 			if(!succes) {
 				int reply = client.getReplyCode();
-				logger.info("Uploading failed for file " + remoteFilename + ".");
-				logger.info("Reply code: "+reply);
+				//logger.info("Uploading failed for file " + remoteFilename + ".");
+				//logger.info("Reply code: "+reply);
 				return false;
 			}
 		} catch(Exception e) {
-			logger.error("",e);
+			//logger.error("",e);
 			return false;
 		}
 		
-		logger.info("Uploading finished for file " + remoteFilename + ".");
+		//logger.info("Uploading finished for file " + remoteFilename + ".");
 		return true;
 	}
 }
