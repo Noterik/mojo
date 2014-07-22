@@ -191,6 +191,8 @@ public class Fs {
 		String  body = "<fsxml>";
 		body += node.asXML();
 		body += "</fsxml>";
+		if (insertpath.endsWith("/")) insertpath = insertpath.substring(0,insertpath.length()-1); // remove last '/' if attached
+
 		//System.out.println("SAVE NODE = "+node.getPath()+" "+node.getName()+" "+node.getId()+" "+body);
 		ServiceInterface smithers = ServiceManager.getService("smithers");
 		if (smithers==null) {
