@@ -65,7 +65,6 @@ public class Fs {
 		}
  		try { 
 			Document doc = DocumentHelper.parseText(node);
-			//System.out.println("RAWNODE="+node);
 			for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 				Element p = (Element)iter.next();
 				result.setName(p.getName());
@@ -96,10 +95,15 @@ public class Fs {
 		return result;		
 	}
 	
-	public static void deleteNode(String path){
+	public static boolean deleteNode(String path){
 		String xml = "<fsxml><properties><depth>0</depth></properties></fsxml>";
-//	danielfix	LazyHomer.sendRequestBart("DELETE", path, xml, "text/xml");
-		
+		ServiceInterface smithers = ServiceManager.getService("smithers");
+		if (smithers==null) {
+			System.out.println("org.springfield.fs.Fs : service not found smithers");
+			return false;
+		}
+		smithers.delete(path, xml, "text/xml");
+		return true;
 	}
 	
 	public static boolean isMainNode(String path) {

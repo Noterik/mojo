@@ -198,7 +198,7 @@ public class FsNode implements Comparable<FsNode>  {
 		// access property looks like access_read = 'u(admin,daniel),a(euscreenpreview)'
 		// where u=user,a=application etc etc. Any normal writes on 'access_ are forbidden.
 		ArrayList<String> list = new ArrayList<String>();
-		
+		System.out.println("ASKER="+asker+" T="+type);
 		// we do them one by one to be sure
 		if (type.equals("user")) {
 			if (readAllowedForUser(asker)) list.add("read");
@@ -295,15 +295,25 @@ public class FsNode implements Comparable<FsNode>  {
 		String path = this.getPath();
 		// /domain/
 		path = path.substring(8);
-		int pos = path.indexOf("/");
-		String dpath = "/domain/"+path.substring(0,pos);
-		path = path.substring(pos);
+
+		String dpath = null;
+		int pos = path.indexOf("/");	
+		if (pos!=-1) {
+			dpath = "/domain/"+path.substring(0,pos);
+			path = path.substring(pos);
+		} else {
+			dpath = "/domain/";
+			System.out.println("PAT="+dpath+path);
+		}
+		
+	
+		
 		if (path.endsWith("/")) path = path.substring(0,path.length()-1); // remove last '/' if attached
 		
 		boolean finished = false;
 		FsNode node = null;
 		while (!finished) {
-			//System.out.println("TYPE="+type+" "+dpath+" "+path);
+			System.out.println("TYPE="+type+" "+dpath+" "+path);
 			if (Fs.isMainNode(dpath+path)) {
 				//System.out.println("MAINNODE");
 				node = Fs.getNode(dpath+path+"/.access");
