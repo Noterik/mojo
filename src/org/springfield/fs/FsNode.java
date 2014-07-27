@@ -86,7 +86,6 @@ public class FsNode implements Comparable<FsNode>  {
 	}
 	
     public void setReferid(String i) {
-    	System.out.println("SET REFERID="+i);
         referid = i;
     }
 
@@ -198,7 +197,6 @@ public class FsNode implements Comparable<FsNode>  {
 		// access property looks like access_read = 'u(admin,daniel),a(euscreenpreview)'
 		// where u=user,a=application etc etc. Any normal writes on 'access_ are forbidden.
 		ArrayList<String> list = new ArrayList<String>();
-		System.out.println("ASKER="+asker+" T="+type);
 		// we do them one by one to be sure
 		if (type.equals("user")) {
 			if (readAllowedForUser(asker)) list.add("read");
@@ -303,7 +301,6 @@ public class FsNode implements Comparable<FsNode>  {
 			path = path.substring(pos);
 		} else {
 			dpath = "/domain/";
-			System.out.println("PAT="+dpath+path);
 		}
 		
 	
@@ -313,20 +310,15 @@ public class FsNode implements Comparable<FsNode>  {
 		boolean finished = false;
 		FsNode node = null;
 		while (!finished) {
-			System.out.println("TYPE="+type+" "+dpath+" "+path);
 			if (Fs.isMainNode(dpath+path)) {
-				//System.out.println("MAINNODE");
 				node = Fs.getNode(dpath+path+"/.access");
 			} else {
-				//System.out.println("SUBNODE");
 				node = Fs.getNode(dpath+path);	
 			}
 			
 			if (node!=null) {
-				//System.out.println("NODE="+node.asXML());
 				String result = node.getProperty("access_"+type);
 				if (result!=null) {
-					//System.out.println("RETURN = "+result);
 					return result;
 				}
 			}
