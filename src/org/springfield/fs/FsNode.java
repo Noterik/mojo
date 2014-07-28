@@ -335,6 +335,10 @@ public class FsNode implements Comparable<FsNode>  {
 
 	
 	public String asXML(){
+		return asXML(false);
+	}
+	
+	public String asXML(boolean fsencode){
 		String xml = "<" + this.getName() + " id=\"" + this.getId() + "\"";
 		if (this.getId()==null) {
 			xml = "<" + this.getName() + " ";
@@ -354,6 +358,7 @@ public class FsNode implements Comparable<FsNode>  {
 		for(Iterator<String> i = this.getKeys(); i.hasNext();){
 			String key = i.next();
 			String value = getProperty(key);
+			if (fsencode) value = FsEncoding.encode(value);
 			if (value.contains("&") || value.contains("<")) {
 				xml+="<"+key+"><![CDATA["+value+"]]></"+key+">\n";
 			} else {
