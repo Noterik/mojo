@@ -311,14 +311,17 @@ public class FsNode implements Comparable<FsNode>  {
 		FsNode node = null;
 		while (!finished) {
 			if (Fs.isMainNode(dpath+path)) {
+				System.out.println("P1="+dpath+path+"/.access");
 				node = Fs.getNode(dpath+path+"/.access");
 			} else {
+				System.out.println("P2="+dpath+path);
 				node = Fs.getNode(dpath+path);	
 			}
 			
 			if (node!=null) {
 				String result = node.getProperty("access_"+type);
 				if (result!=null) {
+					System.out.println("PR="+result);
 					return result;
 				}
 			}
