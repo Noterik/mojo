@@ -193,7 +193,7 @@ public class Fs {
 
 	public static boolean insertNode(FsNode node,String insertpath) {
 		String  body = "<fsxml>";
-		body += node.asXML();
+		body += node.asXML(true);
 		body += "</fsxml>";
 		if (insertpath.endsWith("/")) insertpath = insertpath.substring(0,insertpath.length()-1); // remove last '/' if attached
 
