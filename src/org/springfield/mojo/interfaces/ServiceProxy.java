@@ -31,11 +31,9 @@ public class ServiceProxy implements ServiceInterface {
 		} else {
 			url+= "?spw="+auth;
 		}
-		//System.out.println("proxy get : "+url);
 		Response result = HttpHelper.sendRequest("GET",url,fsxml);
 		if (result!=null) {
 			int status = result.getStatusCode();
-			//System.out.println("R-code="+status);
 			if (status==200) return result.getResponse();
 			if (status==410) {
 				auth = getAuth(); // get the new auth !
@@ -45,10 +43,8 @@ public class ServiceProxy implements ServiceInterface {
 				} else {
 					url+= "?spw="+auth;
 				}
-				//System.out.println("proxy retry get : "+url);
 				result = HttpHelper.sendRequest("GET",url,fsxml);
 				if (result!=null) {
-					//System.out.println("R2-code="+result.getStatusCode());
 					if (status==200) return result.getResponse();
 				}
 			}

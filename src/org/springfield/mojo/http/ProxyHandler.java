@@ -35,11 +35,13 @@ public class ProxyHandler {
 		// kind of weird to get the local service like this should demand local at some point
 		ServiceInterface service = ServiceManager.getService(name);
 		if (service!=null) {
-			String body = service.get(request.getRequestURI(),null, null);
+			String uri = request.getRequestURI();
+			String body = service.get(uri.substring(uri.indexOf("/proxy/")+7),null, null);
 			try {
 				response.setContentType("text/xml; charset=UTF-8");
 				OutputStream out = response.getOutputStream();
 				out.write(body.getBytes());
+				out.flush();
 				out.close();
 			} catch(Exception e) {
 				e.printStackTrace();
