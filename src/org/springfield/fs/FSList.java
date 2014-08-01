@@ -153,6 +153,8 @@ public class FSList {
 				}
 				longkey = longkey.substring(0,longkey.length()-1);
 				key = longkey;
+			} else {
+				key = " "+key+" "; // test daniel for killing in word matches
 			}
 			output.add(key);
 		}

@@ -377,7 +377,7 @@ public class FsNode implements Comparable<FsNode>  {
 		
 		for(Iterator<String> i = this.getKeys(); i.hasNext();){
 			String key = i.next();
-			buf.append((this.getProperty(key).toLowerCase()));
+			buf.append(" "+(this.getProperty(key).toLowerCase())+" ");
 		}		
 		asindex = buf.toString();
 		return asindex;
