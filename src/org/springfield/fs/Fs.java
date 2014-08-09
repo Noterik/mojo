@@ -57,7 +57,6 @@ public class Fs {
 			System.out.println("org.springfield.fs.Fs : service not found smithers");
 			return null;
 		}
-		
 		String node = smithers.get(path,xml,"text/xml");
 				
 		if (node.indexOf("<error id=\"404\">")!=-1) {
@@ -81,6 +80,10 @@ public class Fs {
 							if (p3 instanceof Element) {
 								String pname = ((Element)p3).getName();
 								String pvalue = ((Element)p3).getText();
+								if (pvalue.indexOf("Solistai Laima")!=-1) {
+									System.out.println("D1="+pvalue);
+									System.out.println("D2="+FsEncoding.decode(pvalue));
+								}
 								result.setProperty(pname,FsEncoding.decode(pvalue));
 							} else {
 								
@@ -162,6 +165,10 @@ public class Fs {
 											Element p3 = (Element)o;
 											String pname = p3.getName();
 											String pvalue = p3.getText();
+											if (pvalue.indexOf("Solistai Laima")!=-1) {
+												System.out.println("D1="+pvalue);
+												System.out.println("D2="+FsEncoding.decode(pvalue));
+											}
 											nn.setProperty(pname, FsEncoding.decode(pvalue));
 										}
 									}
