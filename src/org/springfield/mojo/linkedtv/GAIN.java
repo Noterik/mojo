@@ -21,6 +21,8 @@
 package org.springfield.mojo.linkedtv;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springfield.mojo.http.HttpHelper;
 import org.springfield.mojo.http.Response;
 
@@ -217,7 +219,33 @@ public class GAIN {
 		sendGAINRequest();
 	}
 	
-	//keep alive signal
+	public void sendContextRequest(String context, int videoTime) {
+		this.videoTime = videoTime;
+		JSONParser parser = new JSONParser();
+		
+		try {
+			JSONObject json = (JSONObject) parser.parse(context);
+			json.put("accountId", accountId);
+			json.put("applicationId", applicationId);
+			json.put("userId", userId);
+			json.put("mediaresourceId", mediaresourceId);
+			json.put("objectId", objectId);
+			
+			JSONObject attributes = (JSONObject) json.get("attributes");
+			if (attributes != null) {
+				attributes.put("location", videoTime);
+			}
+			
+			String body = json.toString();
+			
+			sendRequest(body);
+		} catch (ParseException e) {
+			System.out.println("Could not parse context json "+context);
+		}
+		
+	}
+	
+	//TODO: send keep alive signal every x seconds
 	
 	private void sendGAINRequest() {
 		JSONObject json = new JSONObject();
@@ -257,11 +285,18 @@ public class GAIN {
 		
 		String body = json.toString();
 		
-		System.out.println(body);
+		sendRequest(body);
+	}
+	
+	private void sendRequest(String json) {
+		System.out.println(json);
 		
-		Response response = HttpHelper.sendRequest("POST", GAIN_URI, body, "application/json");
+		Response response = HttpHelper.sendRequest("POST", GAIN_URI, json, "application/json");
 		if (response.getStatusCode() != 201) {
 			System.out.println("GAIN did return unexpected response code "+response.getStatusCode());
+			System.out.println(response.getResponse());
+		} else {
+			System.out.println("successful response "+response.getStatusCode()+" content "+response.getResponse());
 		}
-	}	
+	}
 }
