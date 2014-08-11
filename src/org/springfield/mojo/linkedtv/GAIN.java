@@ -207,7 +207,7 @@ public class GAIN {
 		sendGAINRequest();
 	}
 	
-	public void viewtime(String userId, String objectId) {
+	public void viewtime(String userId, String objectId, int viewTime) {
 		this.type = "event";
 		this.category = "user";
 		this.action = "viewtime";
@@ -215,6 +215,7 @@ public class GAIN {
 		this.mediaresourceId = "";
 		this.userId = userId;
 		this.objectId = objectId;
+		this.videoTime = viewTime;
 
 		sendGAINRequest();
 	}
