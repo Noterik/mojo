@@ -117,7 +117,7 @@ public class Episode {
 	
 	public String getStreamuri(int quality) {
 		//TODO: integrate ticket engine
-		return baseLocator+"raw/"+quality+"/raw.mp4";
+		return baseLocator+"rawvideo/"+quality+"/raw.mp4";
 	}
 	
 	public String getTitle() {

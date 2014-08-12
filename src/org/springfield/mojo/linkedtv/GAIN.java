@@ -44,7 +44,6 @@ public class GAIN {
 	private static String CLIENT_VERSION = "0.2";
 	private static String GAIN_URI = "http://dev.wa.vse.cz/gain/listener";
 	
-	
 	private String accountId = "";
 	private String applicationId = "";
 	private String screenId = "";
