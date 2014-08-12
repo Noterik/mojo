@@ -78,12 +78,7 @@ public class Channel {
 			requestHeaders.put("Authorization", "Basic "+new String(API_AUTHORIZATION_ENCODED));
 			requestHeaders.put("Accept", "application/xml");
 			
-			System.out.println("GET uri "+uri);
-			
 			Response response = HttpHelper.sendRequest("GET", uri, null, "application/xml", null, -1, CHARACTER_SET, requestHeaders);
-			
-			System.out.println("responsecode "+response.getStatusCode());
-			System.out.println("response "+response.toString());
 			
 			if (response.getStatusCode() == 200) {
 				channelXml = response.getResponse();

@@ -369,12 +369,12 @@ public class GAIN {
 	private void sendRequest(String json) {
 		System.out.println(json);
 		
-		Response response = HttpHelper.sendRequest("POST", GAIN_URI, json, "application/json");
+		/*Response response = HttpHelper.sendRequest("POST", GAIN_URI, json, "application/json");
 		if (response.getStatusCode() != 201) {
 			System.out.println("GAIN did return unexpected response code "+response.getStatusCode());
 			System.out.println(response.getResponse());
 		} else {
 			System.out.println("successful response "+response.getStatusCode()+" content "+response.getResponse());
-		}
+		}*/
 	}
 }
