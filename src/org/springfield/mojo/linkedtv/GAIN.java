@@ -20,6 +20,11 @@
 */
 package org.springfield.mojo.linkedtv;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -49,9 +54,10 @@ public class GAIN {
 	private String category = "";
 	private String action = "";
 	private String objectId = "";
-	private int videoTime = 0;	
+	private String videoTime = "";	
 	private String orientation = "";
 	private String viewtime = "";
+	private List<GAINObjectEntity> entities = new ArrayList<GAINObjectEntity>();
 	
 	public GAIN(String accountId, String applicationId) {
 		this.accountId = accountId;
@@ -62,24 +68,16 @@ public class GAIN {
 		this.type = "event";
 		this.category = "application";
 		this.action = "new";
-		this.screenId = "";
-		this.mediaresourceId = "";
-		this.userId = "";
-		this.objectId = "";
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
 	public void application_remove() {
 		this.type = "event";
 		this.category = "application";
 		this.action = "remove";
-		this.screenId = "";
-		this.mediaresourceId = "";
-		this.userId = "";
-		this.objectId = "";
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
 	public void screen_new(String screenId) {
@@ -87,11 +85,8 @@ public class GAIN {
 		this.category = "screen";
 		this.action = "new";
 		this.screenId = screenId;
-		this.mediaresourceId = "";
-		this.userId = "";
-		this.objectId = "";
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
 	public void screen_remove(String screenId) {
@@ -99,11 +94,8 @@ public class GAIN {
 		this.category = "screen";
 		this.action = "remove";
 		this.screenId = screenId;
-		this.mediaresourceId = "";
-		this.userId = "";
-		this.objectId = "";
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
 	public void screen_orientation(String screenId, String orientation) {
@@ -112,115 +104,104 @@ public class GAIN {
 		this.action = "orientation";
 		this.screenId = screenId;
 		this.orientation = orientation;
-		this.mediaresourceId = "";
-		this.userId = "";
-		this.objectId = "";
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void player_play(String screenId, String mediaresourceId, int videoTime) {
+	public void player_play(String screenId, String mediaresourceId, String videoTime) {
 		this.type = "event";
 		this.category = "player";
 		this.action = "play";
 		this.screenId = screenId;
 		this.mediaresourceId = mediaresourceId;
-		this.userId = "";
-		this.objectId = "";
 		this.videoTime = videoTime;
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void player_pause(String screenId, String mediaresourceId, int videoTime) {
+	public void player_pause(String screenId, String mediaresourceId, String videoTime) {
 		this.type = "event";
 		this.category = "player";
 		this.action = "pause";
 		this.screenId = screenId;
 		this.mediaresourceId = mediaresourceId;
-		this.userId = "";
-		this.objectId = "";
 		this.videoTime = videoTime;
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void player_stop(String screenId, String mediaresourceId, int videoTime) {
+	public void player_stop(String screenId, String mediaresourceId, String videoTime) {
 		this.type = "event";
 		this.category = "player";
 		this.action = "stop";
 		this.screenId = screenId;
 		this.mediaresourceId = mediaresourceId;
-		this.userId = "";
-		this.objectId = "";
 		this.videoTime = videoTime;
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void user_login(String userId) {
+	public void user_login(String userId, String screenId) {
 		this.type = "event";
 		this.category = "user";
 		this.action = "login";
-		this.screenId = "";
-		this.mediaresourceId = "";
+		this.screenId = screenId;
 		this.userId = userId;
-		this.objectId = "";
 		
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void user_logout(String userId) {
+	public void user_logout(String userId, String screenId) {
 		this.type = "event";
 		this.category = "user";
 		this.action = "logout";
-		this.screenId = "";
-		this.mediaresourceId = "";
+		this.screenId = screenId;
 		this.userId = userId;
-		this.objectId = "";
 
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void bookmark(String userId, String objectId) {
+	public void user_bookmark(String userId, String objectId, String screenId) {
 		this.type = "event";
 		this.category = "user";
 		this.action = "bookmark";
-		this.screenId = "";
-		this.mediaresourceId = "";
+		this.screenId = screenId;
 		this.userId = userId;
-		this.objectId = objectId;
+		this.objectId = objectId;		
+		this.userId = userId;
 		
-		this.userId = userId;
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void select(String userId, String objectId) {
+	public void user_select(String userId, String objectId, String screenId) {
 		this.type = "event";
 		this.category = "user";
 		this.action = "select";
-		this.screenId = "";
-		this.mediaresourceId = "";
+		this.screenId = screenId;
 		this.userId = userId;
 		this.objectId = objectId;
 
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void viewtime(String userId, String objectId, int viewTime) {
+	public void user_viewtime(String userId, String objectId, String screenId, String viewTime) {
 		this.type = "event";
 		this.category = "user";
 		this.action = "viewtime";
-		this.screenId = "";
-		this.mediaresourceId = "";
+		this.screenId = screenId;
 		this.userId = userId;
 		this.objectId = objectId;
 		this.videoTime = viewTime;
 
-		sendGAINRequest();
+		sendEventRequest();
 	}
 	
-	public void sendContextRequest(String context, int videoTime) {
+	public void updateEntities(List<GAINObjectEntity> entities) {
+		this.entities = entities;
+	}
+	
+	//External context requests from KINECT
+	public void sendContextRequest(String context, String videoTime) {
 		this.videoTime = videoTime;
 		JSONParser parser = new JSONParser();
 		
@@ -230,7 +211,32 @@ public class GAIN {
 			json.put("applicationId", applicationId);
 			json.put("userId", userId);
 			json.put("mediaresourceId", mediaresourceId);
-			json.put("objectId", objectId);
+			
+			//add object information
+			JSONObject object = new JSONObject();
+			object.put("objectId", objectId);
+			
+			//add entities array
+			JSONArray entities = new JSONArray();			
+			
+			for (Iterator<GAINObjectEntity> it = this.entities.iterator(); it.hasNext(); ) {
+				GAINObjectEntity ent = it.next();
+				
+				JSONObject entity = new JSONObject();			
+				entity.put("source", ent.source);
+				entity.put("lod", ent.lod);
+				entity.put("type", ent.entityType);
+				entity.put("label", ent.label);
+				entity.put("typeLabel", ent.typeLabel);
+				entity.put("entityType", ent.entityType);
+				entity.put("confidence", ent.confidence);
+				entity.put("relevance", ent.relevance);
+				
+				entities.add(entity);
+			}
+			
+			object.put("entities", entities);
+			json.put("object", object);
 			
 			JSONObject attributes = (JSONObject) json.get("attributes");
 			if (attributes != null) {
@@ -246,17 +252,88 @@ public class GAIN {
 		
 	}
 	
-	//TODO: send keep alive signal every x seconds
-	
-	private void sendGAINRequest() {
+	//Keep alive request
+	private void sendKeepAliveRequest() {
 		JSONObject json = new JSONObject();
 		json.put("accountId", accountId);
 		json.put("applicationId", applicationId);
 		json.put("screenId", screenId);
 		json.put("userId",userId);
 		json.put("mediaresourceId", mediaresourceId);
-		json.put("objectId", objectId);
 		json.put("type", type);
+		
+		//add object information
+		JSONObject object = new JSONObject();
+		object.put("objectId", objectId);
+		
+		//add entities array
+		JSONArray entities = new JSONArray();			
+		
+		for (Iterator<GAINObjectEntity> it = this.entities.iterator(); it.hasNext(); ) {
+			GAINObjectEntity ent = it.next();
+			
+			JSONObject entity = new JSONObject();			
+			entity.put("source", ent.source);
+			entity.put("lod", ent.lod);
+			entity.put("type", ent.entityType);
+			entity.put("label", ent.label);
+			entity.put("typeLabel", ent.typeLabel);
+			entity.put("entityType", ent.entityType);
+			entity.put("confidence", ent.confidence);
+			entity.put("relevance", ent.relevance);
+			
+			entities.add(entity);
+		}
+		
+		object.put("entities", entities);		
+		json.put("object", object);
+
+		//attach the keep alive attribute
+		JSONObject attributes = new JSONObject();
+		attributes.put("action", "keepalive");
+		
+		json.put("attributes", attributes);
+		
+		String body = json.toString();
+		
+		sendRequest(body);
+	}
+	
+	//Event request
+	private void sendEventRequest() {
+		JSONObject json = new JSONObject();
+		json.put("accountId", accountId);
+		json.put("applicationId", applicationId);
+		json.put("screenId", screenId);
+		json.put("userId",userId);
+		json.put("mediaresourceId", mediaresourceId);
+		json.put("type", type);
+		
+		//add object information
+		JSONObject object = new JSONObject();
+		object.put("objectId", objectId);
+		
+		//add entities array
+		JSONArray entities = new JSONArray();			
+		
+		for (Iterator<GAINObjectEntity> it = this.entities.iterator(); it.hasNext(); ) {
+			GAINObjectEntity ent = it.next();
+			
+			JSONObject entity = new JSONObject();			
+			entity.put("source", ent.source);
+			entity.put("lod", ent.lod);
+			entity.put("type", ent.entityType);
+			entity.put("label", ent.label);
+			entity.put("typeLabel", ent.typeLabel);
+			entity.put("entityType", ent.entityType);
+			entity.put("confidence", ent.confidence);
+			entity.put("relevance", ent.relevance);
+			
+			entities.add(entity);
+		}
+		
+		object.put("entities", entities);		
+		json.put("object", object);
 		
 		JSONObject attributes = new JSONObject();
 		attributes.put("category", category);
