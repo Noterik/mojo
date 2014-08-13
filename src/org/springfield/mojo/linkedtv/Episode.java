@@ -150,6 +150,8 @@ public class Episode {
 					
 					result.setName(a.getName());
 					result.setId(a.attribute("id").getText());
+					result.setPath(presentationId+"/"+result.getName()+"/"+result.getId());
+					result.setImageBaseUri(stillsUri);
 					
 					List<Node> properties = a.selectNodes("properties/*");
 					for (Node property : properties) {
@@ -189,6 +191,8 @@ public class Episode {
 					
 					result.setName(c.getName());
 					result.setId(c.attribute("id").getText());
+					result.setPath(presentationId+"/"+result.getName()+"/"+result.getId());
+					result.setImageBaseUri(stillsUri);
 					
 					List<Node> properties = c.selectNodes("properties/*");
 					for (Node property : properties) {
@@ -254,6 +258,8 @@ public class Episode {
 						
 						result.setName(c.getName());
 						result.setId(c.attribute("id").getText());
+						result.setPath(presentationId+"/"+result.getName()+"/"+result.getId());
+						result.setImageBaseUri(stillsUri);
 						
 						List<Node> properties = c.selectNodes("properties/*");
 						for (Node property : properties) {
