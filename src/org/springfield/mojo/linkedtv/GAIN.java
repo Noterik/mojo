@@ -41,7 +41,7 @@ import org.springfield.mojo.http.Response;
  */
 public class GAIN {
 	private static String CLIENT_TYPE = "Springfield/Lou";
-	private static String CLIENT_VERSION = "0.2";
+	private static String CLIENT_VERSION = "0.3";
 	private static String GAIN_URI = "http://dev.wa.vse.cz/gain/listener";
 	
 	private String accountId = "";
@@ -183,14 +183,14 @@ public class GAIN {
 		sendEventRequest();
 	}
 	
-	public void user_viewtime(String userId, String objectId, String screenId, String viewTime) {
+	public void user_viewtime(String userId, String objectId, String screenId, String viewtime) {
 		this.type = "event";
 		this.category = "user";
 		this.action = "viewtime";
 		this.screenId = screenId;
 		this.userId = userId;
 		this.objectId = objectId;
-		this.videoTime = viewTime;
+		this.viewtime = viewtime;
 
 		sendEventRequest();
 	}
@@ -247,12 +247,11 @@ public class GAIN {
 			sendRequest(body);
 		} catch (ParseException e) {
 			System.out.println("Could not parse context json "+context);
-		}
-		
+		}		
 	}
 	
 	//Keep alive request
-	private void sendKeepAliveRequest() {
+	public void sendKeepAliveRequest() {
 		JSONObject json = new JSONObject();
 		json.put("accountId", accountId);
 		json.put("applicationId", applicationId);
@@ -371,9 +370,9 @@ public class GAIN {
 		/*Response response = HttpHelper.sendRequest("POST", GAIN_URI, json, "application/json");
 		if (response.getStatusCode() != 201) {
 			System.out.println("GAIN did return unexpected response code "+response.getStatusCode());
-			System.out.println(response.getResponse());
+			//System.out.println(response.getResponse());
 		} else {
-			System.out.println("successful response "+response.getStatusCode()+" content "+response.getResponse());
+			//System.out.println("successful response "+response.getStatusCode()+" content "+response.getResponse());
 		}*/
 	}
 }

@@ -20,7 +20,7 @@
 */
 package org.springfield.mojo.linkedtv;
 
-import org.dom4j.Node;
+import org.springfield.fs.FsNode;
 
 /**
  * GAINObjectEntity.java
@@ -40,13 +40,13 @@ public class GAINObjectEntity {
 	public int confidence;
 	public int relevance;
 	
-	public GAINObjectEntity(Node item) {
-		this.source = item.selectSingleNode("//properties/source") == null ? "" : item.selectSingleNode("//properties/source").getText();
-		this.lod = item.selectSingleNode("//properties/locator") == null ? "" : item.selectSingleNode("//properties/locator").getText();
-		this.type = item.selectSingleNode("//properties/dbpediatype") == null ? "" : item.selectSingleNode("//properties/dbpediatype").getText();
-		this.label = item.selectSingleNode("//properties/title") == null ? "" : item.selectSingleNode("//properties/title").getText();
-		this.typeLabel = item.selectSingleNode("//properties/type") == null ? "" : item.selectSingleNode("//properties/type").getText();
-		this.entityType = item.selectSingleNode("//properties/entitytype") == null ? "" : item.selectSingleNode("//properties/entitytype").getText();
+	public GAINObjectEntity(FsNode item) {
+		this.source = item.getProperty("source") == null ? "" : item.getProperty("source");
+		this.lod = item.getProperty("locator") == null ? "" : item.getProperty("locator");
+		this.type = item.getProperty("dbpediatype") == null ? "" : item.getProperty("dbpediatype"); 
+		this.label = item.getProperty("title") == null ? "" : item.getProperty("title"); 
+		this.typeLabel = item.getProperty("type") == null ? "" : item.getProperty("type");
+		this.entityType = item.getProperty("entitytype") == null ? "" : item.getProperty("entitytype");
 		//confidence and relevance currently not yet available
 		this.confidence = 1;
 		this.relevance = 1;
