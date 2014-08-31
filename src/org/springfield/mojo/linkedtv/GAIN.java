@@ -23,6 +23,7 @@ package org.springfield.mojo.linkedtv;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.jar.Attributes;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -251,7 +252,9 @@ public class GAIN {
 	}
 	
 	//Keep alive request
-	public void sendKeepAliveRequest() {
+	public void sendKeepAliveRequest(String videoTime) {
+		this.videoTime = videoTime;
+		
 		JSONObject json = new JSONObject();
 		json.put("accountId", accountId);
 		json.put("applicationId", applicationId);

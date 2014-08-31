@@ -50,6 +50,8 @@ public class Episode {
 	private String baseLocator;
 	private String stillsUri;
 	private int duration;
+	private int width;
+	private int height;
 	
 	private FSList annotations;
 	private FSList chapters;
@@ -88,6 +90,8 @@ public class Episode {
 						
 						stillsUri = d.selectSingleNode("//screens[@id='1']/properties/uri") == null ? null : d.selectSingleNode("//screens[@id='1']/properties/uri").getText();
 						
+						width = d.selectSingleNode("//rawvideo[@id='1']/properties/width") == null ? -1 : Integer.parseInt(d.selectSingleNode("//rawvideo[@id='1']/properties/width").getText());
+						height = d.selectSingleNode("//rawvideo[@id='1']/properties/height") == null ? -1 : Integer.parseInt(d.selectSingleNode("//rawvideo[@id='1']/properties/height").getText());
 					} catch (DocumentException e) {
 						System.out.println("What? "+e.getMessage());
 					}
@@ -126,6 +130,14 @@ public class Episode {
 	
 	public String getPresentationId() {
 		return presentationId;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight() {
+		return height;
 	}
 	
 	public FSList getAnnotations() {
