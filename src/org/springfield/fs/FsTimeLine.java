@@ -105,6 +105,8 @@ public class FsTimeLine implements MargeObserver {
 		return match;
 	}
 	
+
+	
 	public int getCurrentFsNodeNumber(String type,long time) {
 		ArrayList<FsNode> list = types.get(type);
 		int match = -1;
