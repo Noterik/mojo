@@ -22,6 +22,10 @@ package org.springfield.fs;
 
 import java.util.*;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.Node;
 import org.springfield.fs.*;
 
 
@@ -388,4 +392,40 @@ public class FsNode implements Comparable<FsNode>  {
 		if  ( r % 2 == 0 ) return true;
 		return false;
 	}
+	
+	public static FsNode parseFsNode(String fsxml) {
+		try {
+			   FsNode newnode = new FsNode();
+			   Document doc = DocumentHelper.parseText(fsxml);
+			   if (doc!=null) {
+				   Element rootnode = doc.getRootElement();
+				   String name = rootnode.getName();
+				   String id = rootnode.attributeValue("id");
+				   //System.out.println("PARSE NODE NAME="+name+" ID="+id);	
+				   newnode.setName(name);
+				   newnode.setId(id);
+				   for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {     
+					   Element node = (Element)iter.next();
+					   //System.out.print("NAME="+node.getName());
+						if (node.getName().equals("properties")) {
+							   for(Iterator<Node> iter2 = node.nodeIterator(); iter2.hasNext(); ) {  
+									Node node2 = iter2.next();
+									if(node2 instanceof Element){
+										Element child2 = (Element)node2;	
+										String pname = child2.getName();
+										String pvalue = child2.getText();
+										newnode.setProperty(pname, pvalue);
+										//System.out.println("PARSED NODE PNAME="+pname+" PVALUE="+pvalue);	
+									}
+							   }
+						}
+				   }
+			   }   
+			   return newnode;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 }

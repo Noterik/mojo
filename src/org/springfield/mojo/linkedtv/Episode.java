@@ -20,13 +20,23 @@
 */
 package org.springfield.mojo.linkedtv;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springfield.fs.FSList;
 import org.springfield.fs.FsNode;
 import org.springfield.mojo.http.HttpHelper;
@@ -56,6 +66,7 @@ public class Episode {
 	private FSList annotations;
 	private FSList chapters;
 	private FSList enrichments;
+	private Map<String, FsNode> proxyenrichments = new HashMap<String, FsNode>();
 	
 	public Episode() {
 		
@@ -66,7 +77,7 @@ public class Episode {
 		
 		//Ask Maggie for some details
 		Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId);
-		
+		//System.out.println("BART2="+response.toString());
 		if (response.getStatusCode() == 200) {
 			try {
 				Document doc = DocumentHelper.parseText(response.toString());
@@ -141,15 +152,26 @@ public class Episode {
 	}
 	
 	public FSList getAnnotations() {
-		Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId+"&annotations&curated&renew");
+		// try reading it from disk
+		String readpath  = "/springfield/lisa/data/linkedtv/"+mediaResourceId+"/annotations.xml";
+		System.out.println("READPATH="+readpath);
+		String body  = readFile(readpath);
+		if (body==null) {
+			Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId+"&annotations&curated&renew");
+			if (response.getStatusCode() != 200) {
+				System.out.println("What? "+response.getStatusCode());
+				return new FSList();
+			} else {
+				body = response.toString();	
+			}
+		} else {
+			System.out.println("READING FROM LISA DISK CACHE "+readpath);
+		}
+		//Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId+"&annotations&curated&renew");
 		this.annotations = new FSList();
 		
-		if (response.getStatusCode() != 200) {
-			System.out.println("What? "+response.getStatusCode());
-			return new FSList();
-		} else {
 			try {
-				Document doc = DocumentHelper.parseText(response.toString());
+				Document doc = DocumentHelper.parseText(body);
 				List<Node> nodes = doc.selectNodes("//annotations/*");
 				String presentationUri = doc.selectSingleNode("properties/presentation") == null ? "" : doc.selectSingleNode("properties/presentation").getText();
 				presentationUri += "annotations";
@@ -167,7 +189,11 @@ public class Episode {
 					
 					List<Node> properties = a.selectNodes("properties/*");
 					for (Node property : properties) {
+						//System.out.println("DANIEL2: "+property.getName()+"="+property.getText());
 						result.setProperty(property.getName(), property.getText());
+						if (property.getName().equals("locator")) {
+							loadEntityFromProxy(property.getName(),property.getText());
+						}
 					}
 					annotations.addNode(result);
 				}
@@ -175,22 +201,32 @@ public class Episode {
 				return annotations;
 				
 			} catch (DocumentException e) {
-				System.out.println("Statuscode = "+response.getStatusCode());
+				System.out.println("What? "+e.getMessage());
 				return new FSList();
 			}
-		}
 	}
 	
 	public FSList getChapters() {
-		Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId+"&chapters");
+		// try reading it from disk
+		String readpath  = "/springfield/lisa/data/linkedtv/"+mediaResourceId+"/chapters.xml";
+		System.out.println("READPATH="+readpath);
+		String body  = readFile(readpath);
+		if (body==null) {
+			Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId+"&chapters");
+			if (response.getStatusCode() != 200) {
+				System.out.println("Statuscode = "+response.getStatusCode());
+				return new FSList();
+			} else {
+				body = response.toString();
+			}
+		//System.out.println("CHAPTERS="+response.toString());
+		} else {
+			System.out.println("READING FROM LISA DISK CACHE "+readpath);
+		}
 		this.chapters = new FSList();
 		
-		if (response.getStatusCode() != 200) {
-			System.out.println("Statuscode = "+response.getStatusCode());
-			return new FSList();
-		} else {
 			try {
-				Document doc = DocumentHelper.parseText(response.toString());
+				Document doc = DocumentHelper.parseText(body);
 				List<Node> nodes = doc.selectNodes("//chapter");
 				String presentationUri = doc.selectSingleNode("properties/presentation") == null ? "" : doc.selectSingleNode("properties/presentation").getText();
 				presentationUri += "chapters";
@@ -208,6 +244,7 @@ public class Episode {
 					
 					List<Node> properties = c.selectNodes("properties/*");
 					for (Node property : properties) {
+						//System.out.println("DANIEL: "+property.getName()+"="+property.getText());
 						result.setProperty(property.getName(), property.getText());
 					}					
 					chapters.addNode(result);
@@ -218,8 +255,7 @@ public class Episode {
 			} catch (DocumentException e) {
 				System.out.println("What? "+e.getMessage());
 				return new FSList();
-			}
-		}		
+			}		
 	}
 	
 	public FSList getAnnotationsFromChapter(FsNode chapter) {
@@ -291,4 +327,97 @@ public class Episode {
 		}
 		return new FSList();		
 	}
+	
+	private void loadEntityFromProxy(String name,String url) {
+		FsNode result = new FsNode();
+
+		String decurl = StringEscapeUtils.unescapeHtml(url);
+
+		
+		// try reading it from disk
+		String readpath  = "/springfield/lisa/data/linkedtv/"+mediaResourceId+"/de_"+decurl.substring(url.lastIndexOf("/")+1);
+		System.out.println("READPATH="+readpath);
+		String body  = readFile(readpath);
+		if (body==null) {
+			Response response = HttpHelper.sendRequest("GET", "http://linkedtv.project.cwi.nl/explore/entity_proxy?url="+url+"&lang=de");
+			if (response.getStatusCode() != 200) {
+				System.out.println("CWI PROXY Statuscode = "+response.getStatusCode());
+			} else {
+				body = response.toString();
+			}
+		} else {
+			System.out.println("READING FROM LISA DISK CACHE "+readpath);
+			
+			FsNode cachednode = FsNode.parseFsNode(body);
+			proxyenrichments.put(decurl, cachednode);
+			return;
+		}
+		
+			//System.out.println("PROXY="+url+" B="+response.toString());
+			try {
+			JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject)jsonParser.parse(body);
+				JSONObject mainobj= (JSONObject) jsonObject.get(url);
+				if (mainobj!=null) {
+					JSONArray comments= (JSONArray)mainobj.get("comment");
+					if (comments!=null) {
+						JSONObject comment = (JSONObject)comments.get(0);
+						System.out.println("DESCRIPTION="+url+" "+comment.get("value"));
+						result.setProperty("description",comment.get("value").toString());
+					}
+					JSONArray labels= (JSONArray)mainobj.get("label");
+					if (labels!=null) {
+						JSONObject label = (JSONObject)labels.get(0);
+						System.out.println("LABEL="+url+" "+label.get("value"));
+						result.setProperty("label",label.get("value").toString());
+					}
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			result.setName("entity");
+			result.setId(decurl);
+
+			proxyenrichments.put(decurl, result);
+			String filename="de_"+decurl.substring(url.lastIndexOf("/")+1);
+				
+			writeFile("/springfield/lisa/data/linkedtv/"+mediaResourceId,filename,result.asXML());
+	}
+	
+	public FsNode getEntityFromProxy(String name) {
+		name = StringEscapeUtils.unescapeHtml(name);
+		return proxyenrichments.get(name);
+	}
+	
+	private String readFile(String filename) {
+		try {
+			BufferedReader br = new BufferedReader(new java.io.FileReader(filename));
+			StringBuffer str = new StringBuffer();
+			String line = br.readLine();
+			while (line != null) {
+				str.append(line);
+				str.append("\n");
+				line = br.readLine();
+			}
+			br.close();
+			String body = str.toString();
+			return body;
+		} catch(Exception e) {
+		}
+		return null;
+	}
+	
+	private void writeFile(String writedir,String filename,String body) {
+		try {
+			File md = new File(writedir);
+			md.mkdirs();
+		    PrintWriter writer = new PrintWriter(writedir+"/"+filename, "UTF-8");
+		    writer.println(body);
+		    writer.close();
+		} catch(Exception e) {
+			System.out.println("FILENAME="+writedir+"/"+filename);
+			e.printStackTrace();
+		}
+	}
+	
 }
