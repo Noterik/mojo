@@ -75,12 +75,25 @@ public class Episode {
 	public Episode(String mediaResourceId) {
 		this.mediaResourceId = mediaResourceId;
 		
-		//Ask Maggie for some details
-		Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId);
-		//System.out.println("BART2="+response.toString());
-		if (response.getStatusCode() == 200) {
+		// try reading it from disk
+		String readpath  = "/springfield/lisa/data/linkedtv/"+mediaResourceId+"/episode.xml";
+		System.out.println("READPATH="+readpath);
+		String body  = readFile(readpath);
+		if (body==null) {
+			//Ask Maggie for some details
+			Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+mediaResourceId);
+			//System.out.println("BART2="+response.toString());
+			if (response.getStatusCode() == 200) {
+				body = response.getResponse();
+			} else {
+				System.out.println("Statuscode = "+response.getStatusCode());
+			}
+				
+		} else {
+			System.out.println("READING FROM LISA DISK CACHE "+readpath);
+		}
 			try {
-				Document doc = DocumentHelper.parseText(response.toString());
+				Document doc = DocumentHelper.parseText(body);
 				
 				title = doc.selectSingleNode("//properties/presentationtitle") == null ? "" : doc.selectSingleNode("//properties/presentationtitle").getText();
 				baseLocator = doc.selectSingleNode("//locator/@href") == null ? "" : doc.selectSingleNode("//locator/@href").getText();
@@ -89,28 +102,31 @@ public class Episode {
 				//Ask video for some details
 				if (baseLocator.indexOf("/domain/") != -1) {
 					String videoLocation = baseLocator.substring(baseLocator.indexOf("/domain/"));
-					
-					Response r = HttpHelper.sendRequest("GET", BART+videoLocation);
-					
+				
 					try {
+						Response r = HttpHelper.sendRequest("GET", BART+videoLocation);
+						System.out.println("BARTVIDEO="+r.getResponse());
 						Document d = DocumentHelper.parseText(r.toString());
 						
 						Double dur = d.selectSingleNode("//rawvideo[@id='1']/properties/duration") == null ? -1.0 : Double.parseDouble(d.selectSingleNode("//rawvideo[@id='1']/properties/duration").getText());
 						dur = dur < 0.0 ? -1.0 : dur * 1000;
 						duration = dur.intValue();
-						
+						System.out.println("D="+duration);
 						stillsUri = d.selectSingleNode("//screens[@id='1']/properties/uri") == null ? null : d.selectSingleNode("//screens[@id='1']/properties/uri").getText();
-						
+						System.out.println("S="+stillsUri);
 						width = d.selectSingleNode("//rawvideo[@id='1']/properties/width") == null ? -1 : Integer.parseInt(d.selectSingleNode("//rawvideo[@id='1']/properties/width").getText());
 						height = d.selectSingleNode("//rawvideo[@id='1']/properties/height") == null ? -1 : Integer.parseInt(d.selectSingleNode("//rawvideo[@id='1']/properties/height").getText());
-					} catch (DocumentException e) {
-						System.out.println("What? "+e.getMessage());
+						System.out.println("W="+width+" H="+height);
+					} catch (Exception e) {
+						duration = 1730470;
+						stillsUri ="http://images1.noterik.com/domain/linkedtv/user/rbb/video/1633/shots/1";
+						width = 512;
+						height = 288;
 					}
 				}
 			} catch (DocumentException e) {
 				System.out.println("What? "+e.getMessage());
 			}			
-		}
 	}
 	
 	public String getMediaResourceId() {
@@ -287,9 +303,13 @@ public class Episode {
 	}
 	
 	public FSList getEnrichmentsFromAnnotation(FsNode annotation) {
-		if (annotation != null) {		
-			Response response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+annotation.getId()+"&enrichments");
-			
+		if (annotation != null) {
+			Response response = null;
+			try {
+				response = HttpHelper.sendRequest("GET", MAGGIE+"&id="+annotation.getId()+"&enrichments");
+			} catch(Exception e) {
+				return new FSList();
+			}
 			if (response.getStatusCode() != 200) {
 				System.out.println("Statuscode = "+response.getStatusCode());
 				return new FSList();
@@ -339,6 +359,7 @@ public class Episode {
 		System.out.println("READPATH="+readpath);
 		String body  = readFile(readpath);
 		if (body==null) {
+			System.out.println("CALLING CWI PROXY FOR : "+url);
 			Response response = HttpHelper.sendRequest("GET", "http://linkedtv.project.cwi.nl/explore/entity_proxy?url="+url+"&lang=de");
 			if (response.getStatusCode() != 200) {
 				System.out.println("CWI PROXY Statuscode = "+response.getStatusCode());
@@ -349,6 +370,7 @@ public class Episode {
 			System.out.println("READING FROM LISA DISK CACHE "+readpath);
 			
 			FsNode cachednode = FsNode.parseFsNode(body);
+			System.out.println("LISA PUT "+decurl+" NODE="+cachednode);	
 			proxyenrichments.put(decurl, cachednode);
 			return;
 		}
@@ -371,6 +393,59 @@ public class Episode {
 						System.out.println("LABEL="+url+" "+label.get("value"));
 						result.setProperty("label",label.get("value").toString());
 					}
+					JSONArray thumbs= (JSONArray)mainobj.get("thumb");
+					if (thumbs!=null) {
+						if (thumbs.size()>0) {
+							String thumb = (String)thumbs.get(0);
+							result.setProperty("thumb",thumb);
+						} 
+					}
+
+					// type 
+					JSONArray types= (JSONArray)mainobj.get("type");
+					if (types!=null) {
+						if (types.size()==0) {
+							result.setProperty("type","unknown");
+						} else {
+							Object o = types.get(0);
+							System.out.println("O="+o.getClass().toString());
+							if (o instanceof String) {
+								result.setProperty("type",(String)o);
+							} else {
+								result.setProperty("type","");
+							}
+
+						}
+					}
+					
+					// birthdate 
+					JSONArray birthdates= (JSONArray)mainobj.get("birthDate");
+					if (birthdates!=null) {
+						if (birthdates.size()==0) {
+							result.setProperty("birthdate","");
+						} else {
+							Object o = birthdates.get(0);
+							System.out.println("O2="+o.getClass().toString());
+							if (o instanceof String) {
+								result.setProperty("birthday",(String)o);
+							} else {
+								result.setProperty("birthday","");
+							}
+						}
+					}
+					
+					// birthplace 
+					JSONArray birthplaces= (JSONArray)mainobj.get("birthPlace");
+					if (birthplaces!=null) {
+						if (birthplaces.size()==0) {
+							result.setProperty("birthplace","");
+						} else {
+							JSONObject birthplace = (JSONObject)birthplaces.get(0);
+							result.setProperty("birthplace",birthplace.get("value").toString());
+						}
+					}
+
+					
 				}
 			} catch(Exception e) {
 				e.printStackTrace();
