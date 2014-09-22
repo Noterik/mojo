@@ -42,7 +42,7 @@ import org.springfield.mojo.http.Response;
  */
 public class GAIN {
 	private static String CLIENT_TYPE = "Springfield/Lou";
-	private static String CLIENT_VERSION = "0.3";
+	private static String CLIENT_VERSION = "0.3.1";
 	private static String GAIN_URI = "http://dev.wa.vse.cz/gain/listener";
 	
 	private String accountId = "";
@@ -53,7 +53,7 @@ public class GAIN {
 	private String type = "";
 	private String category = "";
 	private String action = "";
-	private String objectId = "";
+	private String objectId = "-1";
 	private String videoTime = "";	
 	private String orientation = "";
 	private String viewtime = "";
@@ -211,6 +211,7 @@ public class GAIN {
 			json.put("applicationId", applicationId);
 			json.put("userId", userId);
 			json.put("mediaresourceId", mediaresourceId);
+			json.put("objectId", objectId);
 			
 			//add object information
 			JSONObject object = new JSONObject();
@@ -262,6 +263,7 @@ public class GAIN {
 		json.put("userId",userId);
 		json.put("mediaresourceId", mediaresourceId);
 		json.put("type", type);
+		json.put("objectId", objectId);
 		
 		//add object information
 		JSONObject object = new JSONObject();
@@ -309,6 +311,7 @@ public class GAIN {
 		json.put("userId",userId);
 		json.put("mediaresourceId", mediaresourceId);
 		json.put("type", type);
+		json.put("objectId", objectId);
 		
 		//add object information
 		JSONObject object = new JSONObject();
