@@ -387,6 +387,7 @@ public class FsNode implements Comparable<FsNode>  {
 		return asindex;
 	}
 	
+	
 	public boolean isMainNode() {
 		int r = path.split("/").length;
 		if  ( r % 2 == 0 ) return true;
