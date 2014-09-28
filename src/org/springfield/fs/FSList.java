@@ -51,6 +51,7 @@ public class FSList {
 	
 	public FSList() {
 		path = "";
+		nodes = new ArrayList<FsNode>(); 
 	}
 	
 	public FSList(String uri,List<FsNode> list) {

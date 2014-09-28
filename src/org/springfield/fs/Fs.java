@@ -30,7 +30,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
-
 import org.springfield.mojo.http.HttpHelper;
 import org.springfield.mojo.interfaces.*;
 
@@ -245,4 +244,45 @@ public class Fs {
 		}
 		return results;
 	}
+	
+    public static FSList getReferParents(String path) {
+		ServiceInterface smithers = ServiceManager.getService("smithers");
+		if (smithers==null) {
+			System.out.println("org.springfield.fs.Fs : service not found smithers");
+			return null;
+		}
+		String body = "<fsxml mimetype=\"application/fscommand\" id=\"showrefs\">";
+		body+="<properties>";
+		body+="</properties>";
+		body+="</fsxml>";
+		System.out.println("PATH="+path);
+		System.out.println("BODY3="+body);
+		//String result = LazyHomer.sendRequestBart("POST",currentpath,body,"text/xml");
+		String result = smithers.post(path,body,"application/fscommand");
+		System.out.println("R="+result);
+		FSList list = new FSList();
+		try {
+			Document doc = DocumentHelper.parseText(result);
+			if (doc!=null) {
+				   for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {     
+					   Element node = (Element)iter.next();
+					   System.out.println("PAR NAME="+node.getName());
+					   String parentpath = node.getText();
+					   System.out.println("PAR2 NAME="+parentpath);
+					   FsNode parent = Fs.getNode(parentpath);
+					   System.out.println("PAR3b NAME="+parent);
+					   if (parent!=null) {
+						   list.addNode(parent);
+					   } else {
+						  System.out.println("Mojo : can't load refering node "+parentpath); 
+					   }
+				   }
+				   System.out.println("PAR4 NAME="+list.size());
+				   return list;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+        return null;
+    }
 }

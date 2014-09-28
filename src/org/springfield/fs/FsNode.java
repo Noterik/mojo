@@ -387,11 +387,26 @@ public class FsNode implements Comparable<FsNode>  {
 		return asindex;
 	}
 	
+    public FSList getReferParents() {
+        return Fs.getReferParents(this.path);
+    }
+	
 	
 	public boolean isMainNode() {
 		int r = path.split("/").length;
 		if  ( r % 2 == 0 ) return true;
 		return false;
+	}
+	
+	public FsNode getParentNode() {
+		if (isMainNode()) {
+			String parpath  = path.substring(0,path.lastIndexOf('/'));
+			return Fs.getNode(parpath);
+		} else {
+			String parpath  = path.substring(0,path.lastIndexOf('/'));
+			parpath = parpath.substring(0,parpath.lastIndexOf('/'));
+			return Fs.getNode(parpath);
+		}
 	}
 	
 	public static FsNode parseFsNode(String fsxml) {
