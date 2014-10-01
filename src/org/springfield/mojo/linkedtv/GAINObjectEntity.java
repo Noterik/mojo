@@ -46,7 +46,7 @@ public class GAINObjectEntity {
 		this.type = item.getProperty("dbpediatype") == null ? "" : item.getProperty("dbpediatype"); 
 		this.label = item.getProperty("title") == null ? "" : item.getProperty("title"); 
 		this.typeLabel = item.getProperty("type") == null ? "" : item.getProperty("type");
-		this.entityType = item.getProperty("entitytype") == null ? "" : item.getProperty("entitytype");
+		this.entityType = ""; //should be either named or common entity, but optional, so left empty
 		//confidence and relevance currently not yet available
 		this.confidence = 1;
 		this.relevance = 1;

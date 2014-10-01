@@ -226,7 +226,7 @@ public class GAIN {
 				JSONObject entity = new JSONObject();			
 				entity.put("source", ent.source);
 				entity.put("lod", ent.lod);
-				entity.put("type", ent.entityType);
+				entity.put("type", ent.type);
 				entity.put("label", ent.label);
 				entity.put("typeLabel", ent.typeLabel);
 				entity.put("entityType", ent.entityType);
@@ -278,7 +278,7 @@ public class GAIN {
 			JSONObject entity = new JSONObject();			
 			entity.put("source", ent.source);
 			entity.put("lod", ent.lod);
-			entity.put("type", ent.entityType);
+			entity.put("type", ent.type);
 			entity.put("label", ent.label);
 			entity.put("typeLabel", ent.typeLabel);
 			entity.put("entityType", ent.entityType);
@@ -326,7 +326,7 @@ public class GAIN {
 			JSONObject entity = new JSONObject();			
 			entity.put("source", ent.source);
 			entity.put("lod", ent.lod);
-			entity.put("type", ent.entityType);
+			entity.put("type", ent.type);
 			entity.put("label", ent.label);
 			entity.put("typeLabel", ent.typeLabel);
 			entity.put("entityType", ent.entityType);
