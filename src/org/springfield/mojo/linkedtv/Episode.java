@@ -360,11 +360,16 @@ public class Episode {
 		String body  = readFile(readpath);
 		if (body==null) {
 			System.out.println("CALLING CWI PROXY FOR : "+url);
-			Response response = HttpHelper.sendRequest("GET", "http://linkedtv.project.cwi.nl/explore/entity_proxy?url="+url+"&lang=de");
-			if (response.getStatusCode() != 200) {
-				System.out.println("CWI PROXY Statuscode = "+response.getStatusCode());
-			} else {
-				body = response.toString();
+			try {			
+				Response response = HttpHelper.sendRequest("GET", "http://linkedtv.project.cwi.nl/explore/entity_proxy?url="+url+"&lang=de");
+				if (response.getStatusCode() != 200) {
+					System.out.println("CWI PROXY Statuscode = "+response.getStatusCode());
+				} else {
+					body = response.toString();
+				}
+			} catch (Exception e) {
+				//error in retrieving content
+				return;
 			}
 		} else {
 			System.out.println("READING FROM LISA DISK CACHE "+readpath);
