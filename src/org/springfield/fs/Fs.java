@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -42,6 +43,8 @@ import org.springfield.mojo.interfaces.*;
  *
  */
 public class Fs {
+	/** logger */
+	private static Logger LOG = Logger.getLogger(Fs.class);
 	
 	private static String[] ignorelist = {"rawvideo","screens"};
 
@@ -119,19 +122,24 @@ public class Fs {
 		String xml = "<fsxml><properties><depth>"+depth+"</depth></properties></fsxml>";
 		
 		String nodes = "";
-		if (path.indexOf("http://")==-1) {
-		// danielfix	nodes = LazyHomer.sendRequestBart("GET",path,xml,"text/xml");
-		} else {
-			ServiceInterface smithers = ServiceManager.getService("smithers");
-			if (smithers==null) {
-				System.out.println("org.springfield.fs.Fs : service not found smithers");
-				return null;
-			}
-			smithers.get(path,xml,"text/xml");
-			path = path.substring(path.indexOf("/domain/"));
+		
+		ServiceInterface smithers = ServiceManager.getService("smithers");
+		if (smithers==null) {
+			System.out.println("org.springfield.fs.Fs : service not found smithers");
+			return null;
 		}
+		nodes = smithers.get(path,xml,"text/xml");
+		path = path.substring(path.indexOf("/domain/"));
+		
+		if (nodes.indexOf("<error id=\"404\">")!=-1) {
+			return null; // node not found
+		}
+		
+		LOG.debug("nodes "+nodes);
+		
  		try { 
-			Document doc = DocumentHelper.parseText(nodes);
+			Document doc = DocumentHelper.parseText(nodes);		
+			
 			if (isMainNode(path)) {
 				for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 					Element node = (Element)iter.next();
@@ -141,6 +149,20 @@ public class Fs {
 						nn.setId(node.attribute("id").getText());
 						nn.setPath(path+"/"+nn.getName()+"/"+nn.getId());
 						result.add(nn);
+						for(Iterator<Node> iter2 = node.nodeIterator(); iter2.hasNext(); ) {
+							Element p2 = (Element)iter2.next();
+							if (p2.getName().equals("properties")) {
+								for(Iterator<Node> iter3 = p2.nodeIterator(); iter3.hasNext(); ) {
+									Object o  = iter3.next();
+									if (o instanceof Element) {
+										Element p3 = (Element)o;
+										String pname = p3.getName();
+										String pvalue = p3.getText();
+										nn.setProperty(pname, FsEncoding.decode(pvalue));
+									}
+								}
+							}
+						}
 					}
 				}
 			} else {
@@ -153,8 +175,7 @@ public class Fs {
 						if (!node2.getName().equals("properties")) {
 							nn.setName(node2.getName());
 							nn.setId(node2.attribute("id").getText());
-							nn.setPath(path+"/"+nn.getName()+"/"+nn.getId());
-							result.add(nn);
+							nn.setPath(path+"/"+nn.getName()+"/"+nn.getId());							
 							for(Iterator<Node> iter3 = node2.nodeIterator(); iter3.hasNext(); ) {
 								Element p2 = (Element)iter3.next();
 								if (p2.getName().equals("properties")) {
@@ -173,7 +194,7 @@ public class Fs {
 									}
 								}
 							}
-
+							result.add(nn);
 						}
 					}
 				}
