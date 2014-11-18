@@ -49,7 +49,7 @@ public class GAIN {
 	private String applicationId = "";
 	private String screenId = "";
 	private String mediaresourceId = "";
-	private String userId = "";
+	private String userId = "/domain/linkedtv/user/unknown";
 	private String type = "";
 	private String category = "";
 	private String action = "";
