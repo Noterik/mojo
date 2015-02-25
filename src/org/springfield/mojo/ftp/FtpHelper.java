@@ -192,6 +192,79 @@ public class FtpHelper {
 		return true;
 	}
 	
+	/*
+	 * Deletes a file from the FTP
+	 * 
+	 * @param server	ftp server location
+	 * @param username 	user login information
+	 * @param password 	user login information
+	 * @param rFolder 	remote folder
+	 * @param rFilename	name of remote file to delete
+	 */
+	public static boolean commonsDeleteFile(String server, String username, String password, String rFolder, String rFilename) {
+		FTPClient ftp = null;
+		int reply;
+		boolean succes;
+		
+		try {			
+			// Connect and logon to FTP Server
+			ftp = new FTPClient();
+			ftp.connect( server );
+			ftp.login( username, password );
+			 
+			// check if connected
+			reply = ftp.getReplyCode();
+			if(!FTPReply.isPositiveCompletion(reply)) {
+				//logger.info("Could not connect to " + server + ".");
+				//logger.info("Reply code: "+reply);
+				ftp.disconnect();
+				return false;
+			}
+
+			//logger.info("Connected to " + server + ".");
+			//logger.info(ftp.getReplyString());
+			
+			//logger.info("Changed working directory to " + rFolder + ".");
+			
+			String ftpFile = rFolder;
+			if(!ftpFile.endsWith("/")) {
+				ftpFile += "/";
+			} 
+			ftpFile += rFilename;
+			
+			//Delete the file
+			succes = ftp.deleteFile(ftpFile);
+			
+			if(!succes) {
+				reply = ftp.getReplyCode();
+				ftp.disconnect();
+				System.out.println("Deleting failed for file " + ftpFile + ". Code: " + reply);
+				//logger.info("Reply code: "+reply);
+				return false;
+			}
+			
+			//logger.info("Downloading completed for file " + rFilename + ".");
+			
+			// logout
+			ftp.logout();
+		} catch(Exception e) {
+			//logger.error("",e);
+			return false;
+		} finally {
+			// disconnect
+			try {
+				if(ftp!=null) {
+					if(ftp.isConnected()) {
+						ftp.disconnect();
+					}
+				}
+			} catch(Exception e) {
+				//logger.error("",e);
+			}
+		}
+		return true;
+	}
+	
 	private static boolean commonsGetFile(FTPClient client, String lFilename, String rFilename) {
 		//logger.info("Downloading file " + rFilename + ".");
 		
