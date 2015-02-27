@@ -148,6 +148,10 @@ public class Fs {
 						nn.setName(node.getName());
 						nn.setId(node.attribute("id").getText());
 						nn.setPath(path+"/"+nn.getName()+"/"+nn.getId());
+						if (node.attribute("referid")!=null) {
+							String referid = node.attribute("referid").getText();
+							if (referid!=null) nn.setReferid(referid);
+						}
 						result.add(nn);
 						for(Iterator<Node> iter2 = node.nodeIterator(); iter2.hasNext(); ) {
 							Element p2 = (Element)iter2.next();
