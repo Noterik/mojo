@@ -112,6 +112,10 @@ public class Fs {
 	}
 	
 	public static boolean isMainNode(String path) {
+		//discard trailing slash
+		if (path.length() > 0 && path.substring(path.length()-1).equals("/")) {
+			path = path.substring(0, path.length()-1);
+		}
 		int r = path.split("/").length;
 		if  ( r % 2 == 0 ) return true;
 		return false;
@@ -147,7 +151,7 @@ public class Fs {
 					if (!node.getName().equals("properties")) {
 						nn.setName(node.getName());
 						nn.setId(node.attribute("id").getText());
-						nn.setPath(path+"/"+nn.getName()+"/"+nn.getId());
+						nn.setPath(path+"/"+nn.getId());
 						if (node.attribute("referid")!=null) {
 							String referid = node.attribute("referid").getText();
 							if (referid!=null) nn.setReferid(referid);
