@@ -6,7 +6,6 @@ public class FsEncoding {
 	public FsEncoding() {}
 	
 	public static String decode(String input) {
-		//System.out.println("decode in="+input);
 		if (input == null) return null;
 		if (input.indexOf("\\")!=-1) {
 			int pos = input.indexOf("\\");
@@ -41,7 +40,6 @@ public class FsEncoding {
 	}	
 	
 	public static String encode(String input) {
-		//System.out.println("encode in="+input);
 		StringBuffer output = new StringBuffer("");
 		for (int i = 0; i < input.length(); i++) {
 			int code = (int) input.charAt(i);

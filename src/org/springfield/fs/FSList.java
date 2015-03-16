@@ -28,6 +28,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.Node;
+
 /**
  * FSList
  * 
@@ -279,4 +284,41 @@ public class FSList {
 		}
 		return result;
 	}
+	
+	public static FSList parseNodes(String fsxml) {
+		FSList result = new FSList();
+		try {
+		Document doc = DocumentHelper.parseText(fsxml);
+		
+		for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
+			Element node = (Element)iter.next();
+			FsNode nn = new FsNode();
+			if (!node.getName().equals("properties")) {
+				nn.setName(node.getName());
+				nn.setId(node.attribute("id").getText());
+				//nn.setPath(path+"/"+nn.getName()+"/"+nn.getId());
+				result.addNode(nn);
+				for(Iterator<Node> iter2 = node.nodeIterator(); iter2.hasNext(); ) {
+					Element p2 = (Element)iter2.next();
+					if (p2.getName().equals("properties")) {
+						for(Iterator<Node> iter3 = p2.nodeIterator(); iter3.hasNext(); ) {
+							Object o  = iter3.next();
+							if (o instanceof Element) {
+								Element p3 = (Element)o;
+								String pname = p3.getName();
+								String pvalue = p3.getText();
+								nn.setProperty(pname, FsEncoding.decode(pvalue));
+							}
+						}
+					}
+				}
+			}
+		}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
 }

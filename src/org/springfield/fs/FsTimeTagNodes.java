@@ -40,7 +40,6 @@ public class FsTimeTagNodes {
 	
 	public void addNode(FsNode node) {
 		ArrayList<FsNode> list = types.get(node.getName());
-		//System.out.println("LIST="+list+" N="+node.getName());
 		if (list==null) {
 			 list = new ArrayList<FsNode>();
 			 types.put(node.getName(), list);
