@@ -60,7 +60,10 @@ public class ServiceManager {
 					FsNode n = (FsNode)iter.next();
 					if (n.getName().equals("nodes")) { // lets make sure its a node 
 						String ipnumber = n.getId();
-						ServiceInterface newproxy = new ServiceProxy(name, ipnumber,"8081"); // need to store port
+						String port = "8081";
+						String nodePort = n.getProperty("port");
+						if(nodePort!=null) port = nodePort;
+						ServiceInterface newproxy = new ServiceProxy(name, ipnumber, port); // need to store port
 						plist.put(ipnumber,newproxy);
 					}
 				}

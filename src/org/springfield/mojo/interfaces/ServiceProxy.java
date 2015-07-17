@@ -14,7 +14,7 @@ public class ServiceProxy implements ServiceInterface {
 		this.name = name;
 		this.ipnumber = ipnumber;
 		this.port = port;
-		//System.out.println("Creating proxy "+name+" ipnumber "+ipnumber+" "+port);
+		System.out.println("Creating proxy "+name+" ipnumber "+ipnumber+" "+port);
 	}
 	
 	public String getName() {
@@ -31,6 +31,7 @@ public class ServiceProxy implements ServiceInterface {
 		} else {
 			url+= "?spw="+auth;
 		}
+		System.out.println("PROXY URL: " + url);
 		Response result = HttpHelper.sendRequest("GET",url,fsxml);
 		if (result!=null) {
 			int status = result.getStatusCode();
@@ -67,7 +68,7 @@ public class ServiceProxy implements ServiceInterface {
 	private String getAuth() {
 		ServiceInterface barney = ServiceManager.getService("barney");
 		String result = barney.get("getserviceauth("+ipnumber+")",null,null);
-		//System.out.println("PROXY AUTH="+result);
+		System.out.println("PROXY AUTH="+result);
 		return result;
 	}
 	
