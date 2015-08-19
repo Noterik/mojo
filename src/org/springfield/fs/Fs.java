@@ -31,7 +31,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.springfield.mojo.http.HttpHelper;
 import org.springfield.mojo.interfaces.*;
 
 /**
@@ -121,9 +120,48 @@ public class Fs {
 		return false;
 	}
 	
+	public static int getTotalResultsAvailable(String path) {
+		//results can only be given for main parent nodes
+		if (!isMainNode(path)) {
+			return -1;
+		}
+		
+		String xml = "<fsxml><properties>"
+				+ "<depth>0</depth>"
+				+ "<start>0</start>"
+				+ "<limit>0</limit>"
+				+ "</properties></fsxml>";
+	
+		String results = "";
+			
+		ServiceInterface smithers = ServiceManager.getService("smithers");
+		if (smithers==null) {
+			System.out.println("org.springfield.fs.Fs : service not found smithers");
+			return -1;
+		}
+		results = smithers.get(path,xml,"text/xml");
+			
+		try { 
+			Document doc = DocumentHelper.parseText(results);
+			
+			return doc.selectSingleNode("/fsxml/properties/totalResultsAvailable") == null ? -1 : Integer.parseInt(doc.selectSingleNode("/fsxml/properties/totalResultsAvailable").getText());
+		} catch(Exception e) {
+ 			e.printStackTrace();
+ 		}
+		return -1;
+	}	
+	
 	public static List<FsNode> getNodes(String path,int depth) {
+		return getNodes(path, depth, 0, Integer.MAX_VALUE);
+	}
+	
+	public static List<FsNode> getNodes(String path,int depth, int start, int limit) {
 		List<FsNode> result = new ArrayList<FsNode>();
-		String xml = "<fsxml><properties><depth>"+depth+"</depth></properties></fsxml>";
+		String xml = "<fsxml><properties>"
+					+ "<depth>"+depth+"</depth>"
+					+ "<start>"+start+"</start>"
+					+ "<limit>"+limit+"</limit>"
+					+ "</properties></fsxml>";
 		
 		String nodes = "";
 		
