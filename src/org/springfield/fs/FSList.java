@@ -349,6 +349,7 @@ public class FSList {
 		return jresult;
 	}
 
-	
-	
+	public static FSList parseNodeList(String uri, List<FsNode> nodes) {
+		return new FSList(uri, nodes);
+	}	
 }

@@ -168,10 +168,16 @@ public class FsNode implements Comparable<FsNode>  {
 	public JSONObject toJSONObject(String languagecode, String p) {
 		String[] properties = p.split(",");
 		JSONObject jresult = new JSONObject();
-		for(Iterator<String> i = this.getKeys(); i.hasNext();){
-			String key = i.next();
-			String value = getProperty(key);
-			jresult.put(key, value);
+		if (properties != null) {
+			for (int i=0;i<properties.length;i++) {
+				String key = properties[i];
+				String value = this.getSmartProperty(languagecode,key);
+				if (value!=null) {
+					jresult.put(key, value);
+				} else {
+					jresult.put(key,"");
+				}
+			}
 		}
 		return jresult;
 	}
