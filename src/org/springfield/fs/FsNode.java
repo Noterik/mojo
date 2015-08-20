@@ -26,6 +26,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.json.simple.JSONObject;
 import org.springfield.fs.*;
 
 
@@ -132,6 +133,21 @@ public class FsNode implements Comparable<FsNode>  {
 	public String getProperty(String name) {
 		return properties.get(name);
 	}
+	
+	public String getSmartProperty(String langaugecode,String name) {
+		String value ="";
+		if (!langaugecode.equals("")) {
+			value = properties.get(langaugecode+"_"+name);
+			if (value!=null) {
+				return value;
+			} else {
+				return properties.get(name);	
+			}
+		} else {
+			return properties.get(name);
+		}
+		
+	}
 
 	public String getProperty(String name,String def) {
 		String value =  properties.get(name);
@@ -149,6 +165,16 @@ public class FsNode implements Comparable<FsNode>  {
 		return getPropertiesXML(false);
 	}
 	
+	public JSONObject toJSONObject(String languagecode, String p) {
+		String[] properties = p.split(",");
+		JSONObject jresult = new JSONObject();
+		for(Iterator<String> i = this.getKeys(); i.hasNext();){
+			String key = i.next();
+			String value = getProperty(key);
+			jresult.put(key, value);
+		}
+		return jresult;
+	}
 	
 	public String getPropertiesXML(boolean fsencode) {
 			String xml="<properties>";

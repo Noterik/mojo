@@ -21,12 +21,20 @@
 
 package org.springfield.marge;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 
 /**
@@ -43,14 +51,13 @@ public class Marge extends Thread {
 	int errorcounter = 0;
 	int errorcounter2 = 0;
 	private static boolean running = false;
-	private static Map<String, MargeObserver> observers = new HashMap<String, MargeObserver>();
+	private static Map<String, ArrayList<MargeObserver>> observers = new HashMap<String,ArrayList<MargeObserver>>();
 	private static enum methods { GET,POST,PUT,DELETE,INFO,TRACE,LINK,AUTH,PAUTH; }
 	private static MargeTimerThread timerthread = null;
 	MulticastSocket s = null;
 	private static Marge instance = null;
 	
 	public Marge() {
-		System.out.println("STARTING MOJOMARGE");
 		if (!running) {
 			running = true;
 			start();
@@ -66,7 +73,36 @@ public class Marge extends Thread {
     }
 	
 	public static void addObserver(String url,MargeObserver o) {
-		observers.put(url, o);
+		if (url==null || url.equals("")) return;
+		
+		ArrayList cur = observers.get(url);
+		if (cur!=null) {
+			cur.add(o);
+		} else {
+			cur = new ArrayList<MargeObserver>();
+			cur.add(o);
+			observers.put(url, cur);
+		}
+		System.out.println("ADDED OBSERVER IN MOJO !!"+url+" FOR "+o+" COUNT="+observers.size());
+	}
+	
+	public static void removeObserver(MargeObserver o) {
+		int total = 0;
+		String removekey = null;
+		Set<String> keys = observers.keySet();
+		Iterator<String> it = keys.iterator();
+		while(it.hasNext()){
+			String key = it.next();
+			ArrayList cur = observers.get(key);
+			cur.remove(o);
+			total += cur.size();
+			if (cur.size()==0) {
+				removekey = key;
+			}
+		}
+		if (removekey!=null) observers.remove(removekey);
+		
+		System.out.println("REMOVE OBSERVER(s) IN MOJO ! FOR "+o+" COUNT="+observers.size()+" total="+total);
 	}
 	
 	public static void addTimedObserver(String url,int counter,MargeObserver o) {
@@ -75,7 +111,7 @@ public class Marge extends Thread {
 	
 	public void run() {
 		try {
-			s = new MulticastSocket(5042); 
+			s = new MulticastSocket(getPort()); // why is this hardcoded ? daniel. 
 			s.joinGroup(InetAddress.getByName(group));
 			byte[] buffer = new byte[1024];
 			DatagramPacket dp = new DatagramPacket(buffer, 1024);
@@ -135,9 +171,10 @@ public class Marge extends Thread {
 			// check for direct matches
 			Object obs = observers.get(url);
 			if (obs!=null) {
-				if (obs instanceof MargeObserver) {
-					((MargeObserver)obs).remoteSignal(from, method, url);
-				} // should also have a list
+				ArrayList<MargeObserver> list = (ArrayList<MargeObserver>)obs;
+				for(MargeObserver caller: list){
+					caller.remoteSignal(from, method, url);
+				}
 			}			
 
 			url = url.substring(0,pos);
@@ -151,9 +188,10 @@ public class Marge extends Thread {
 				if (isObserverMatch(key,ourl)) {
 					Object obs = observers.get(key);
 					if (obs!=null) {
-						if (obs instanceof MargeObserver) {
-							((MargeObserver)obs).remoteSignal(from, method, ourl+","+key);
-						} // should also have a list
+						ArrayList<MargeObserver> list = (ArrayList<MargeObserver>)obs;
+						for(MargeObserver caller: list){
+							caller.remoteSignal(from, method, ourl+","+key);
+						}
 					}
 				}
 			}
@@ -190,4 +228,36 @@ public class Marge extends Thread {
 		running = false;
 		if (s!=null) s.close();
 	}	
+	
+	private int getPort() {
+		// properties
+		Properties props = new Properties();
+		
+		// new loader to load from disk instead of war file
+		String configfilename = "/springfield/homer/config.xml";
+		// load from file
+		try {
+			System.out.println("INFO: Loading config file from load : "+configfilename);
+			File file = new File(configfilename);
+
+			if (file.exists()) {
+				props.loadFromXML(new BufferedInputStream(new FileInputStream(file)));
+			} else { 
+				System.out.println("FATAL: Could not load config "+configfilename);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		int port = -1;
+		try {
+			port = Integer.parseInt(props.getProperty("marge-port"));
+		} catch(Exception e) {
+			System.out.println("MOJO CAN'T READ PORT NUMBER FROM homer/config.xml");
+		}
+		return port;
+	}
+
 }

@@ -32,6 +32,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  * FSList
@@ -319,6 +321,34 @@ public class FSList {
 		}
 		return result;
 	}
+		
+	public JSONObject toJSONObject(String languagecode, String p) {
+		String[] properties = p.split(",");
+		JSONObject jresult = new JSONObject();
+		JSONArray jnodes= new JSONArray();
+		jresult.put("nodes", jnodes);
+		
+		List<FsNode> nodes = getNodes();
+		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
+			FsNode n = (FsNode)iter.next();
+			JSONObject jnode = new JSONObject();
+			jnode.put("id",n.getId());
+			if (properties!=null) {
+				for (int i=0;i<properties.length;i++) {
+					String key = properties[i];
+					String value = n.getSmartProperty(languagecode,key);
+					if (value!=null) {
+						jnode.put(key, value);
+					} else {
+						jnode.put(key,"");
+					}
+				}
+			}
+			jnodes.add(jnode);
+		}
+		return jresult;
+	}
+
 	
 	
 }

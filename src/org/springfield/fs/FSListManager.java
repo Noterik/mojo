@@ -47,10 +47,13 @@ import org.springfield.mojo.interfaces.ServiceManager;
  */
 public class FSListManager {
 	private static Map<String, FSList> lists = new HashMap<String, FSList>();
+	private static Map<String, FSList> applists = new HashMap<String, FSList>();
 	
 	public static FSList get(String uri) {
+		if (uri.startsWith("/app")) return applists.get(uri);
 		return get(uri,true);
 	}
+	
 	
 	public static FSList get(String uri,boolean cache) {
 		// see if we already have it loaded
@@ -88,6 +91,7 @@ public class FSListManager {
 	}
 	
 	public static void put(String uri,FSList list) {
+		if (uri.startsWith("/app")) applists.put(uri,list);
 		lists.put(uri,list);
 	}
 	
