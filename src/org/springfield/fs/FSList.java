@@ -333,6 +333,7 @@ public class FSList {
 			FsNode n = (FsNode)iter.next();
 			JSONObject jnode = new JSONObject();
 			jnode.put("id",n.getId());
+			jnode.put("path", n.getPath());
 			if (properties!=null) {
 				for (int i=0;i<properties.length;i++) {
 					String key = properties[i];
