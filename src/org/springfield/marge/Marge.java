@@ -83,7 +83,6 @@ public class Marge extends Thread {
 			cur.add(o);
 			observers.put(url, cur);
 		}
-		System.out.println("ADDED OBSERVER IN MOJO !!"+url+" FOR "+o+" COUNT="+observers.size());
 	}
 	
 	public static void removeObserver(MargeObserver o) {
