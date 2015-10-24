@@ -101,7 +101,6 @@ public class Marge extends Thread {
 		}
 		if (removekey!=null) observers.remove(removekey);
 		
-		System.out.println("REMOVE OBSERVER(s) IN MOJO ! FOR "+o+" COUNT="+observers.size()+" total="+total);
 	}
 	
 	public static void addTimedObserver(String url,int counter,MargeObserver o) {
