@@ -352,4 +352,17 @@ public class Fs {
 		}
         return null;
     }
+    
+    public static String createLink(String source,String destination) {
+		ServiceInterface smithers = ServiceManager.getService("smithers");
+		if (Fs.isMainNode(destination)) {
+			String newbody = "datatype=attributes&referid="+source;
+			String result = smithers.post(destination,newbody,"text/xml");
+			return result;
+		} else {
+			String newbody = "<fsxml><attributes><referid>"+source+"</referid></attributes></fsxml>"; 
+			String result = smithers.put(destination+"/attributes",newbody,"text/xml");
+			return result;
+		}
+    }
 }
