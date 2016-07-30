@@ -182,6 +182,16 @@ public class FsNode implements Comparable<FsNode>  {
 		return jresult;
 	}
 	
+	public FsPropertySet getPropertySet() {
+		FsPropertySet ps = new FsPropertySet();
+		for(Iterator<String> i = this.getKeys(); i.hasNext();){
+			String key = i.next();
+			String value = getProperty(key);
+			ps.setProperty(key, value);
+		}
+		return ps;
+	}
+	
 	public String getPropertiesXML(boolean fsencode) {
 			String xml="<properties>";
 			for(Iterator<String> i = this.getKeys(); i.hasNext();){

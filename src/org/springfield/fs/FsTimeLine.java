@@ -41,9 +41,10 @@ public class FsTimeLine implements MargeObserver {
 	private ArrayList<FsTimeLineObserver> observers = new ArrayList<FsTimeLineObserver>();
 
 	public void addNodes(ArrayList<FsNode> nodes) {
-		String path = "";
+		//String path = "";
 		for (int i=0;i<nodes.size();i++) {
 			FsNode node = nodes.get(i);
+			/*
 			if(path.equals("")){
 				String[] fullPath = node.getPath().split("/");
 				for(int c = 0; c < fullPath.length - 1; c++){
@@ -52,6 +53,7 @@ public class FsTimeLine implements MargeObserver {
 					}
 				}
 			}
+			*/
 			ArrayList<FsNode> list = types.get(node.getName());
 			if (list==null) {
 				 list = new ArrayList<FsNode>();				
@@ -68,12 +70,11 @@ public class FsTimeLine implements MargeObserver {
 			Collections.sort(list);
 		}
 		
-		System.out.println("-----------------------------");
-		System.out.println("LISTEN TO: " + path);
-		System.out.println("-----------------------------");
-		if(!observing.contains(path + "/")){
-// danielfix			LazyMarge.addObserver(path + "/*", this);
-		}
+		//System.out.println("-----------------------------");
+		//System.out.println("LISTEN TO: " + path);
+		//System.out.println("-----------------------------");
+		//if(!observing.contains(path + "/")){
+	//	}
 	}
 	
 	public Iterator<FsNode> getFsNodesByType(String type) {
