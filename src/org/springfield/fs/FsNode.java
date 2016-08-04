@@ -26,6 +26,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springfield.fs.*;
 
@@ -166,16 +167,29 @@ public class FsNode implements Comparable<FsNode>  {
 	}
 	
 	public JSONObject toJSONObject(String languagecode, String p) {
-		String[] properties = p.split(",");
 		JSONObject jresult = new JSONObject();
-		if (properties != null) {
-			for (int i=0;i<properties.length;i++) {
-				String key = properties[i];
-				String value = this.getSmartProperty(languagecode,key);
-				if (value!=null) {
-					jresult.put(key, value);
-				} else {
-					jresult.put(key,"");
+		if (p.equals("*")) {
+			JSONArray ar = new JSONArray();
+			jresult.put("properties", ar);
+			for(Iterator<String> i = this.getKeys(); i.hasNext();){
+				JSONObject n = new JSONObject();
+				String key = i.next();
+				String value = getProperty(key);
+				n.put("name",key);
+				n.put("value",value);
+				ar.add(n);
+			}
+		} else {
+			String[] properties = p.split(",");
+			if (properties != null) {
+				for (int i=0;i<properties.length;i++) {
+					String key = properties[i];
+					String value = this.getSmartProperty(languagecode,key);
+					if (value!=null) {
+						jresult.put(key, value);
+					} else {
+						jresult.put(key,"");
+					}
 				}
 			}
 		}
