@@ -133,6 +133,18 @@ public class FSList {
 		return result;
 	}
 	
+	public List<FsNode> getNodesFiltered(String propertyname,String searchkey) {
+		List<FsNode> result = new ArrayList<FsNode>();
+		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
+			FsNode n = (FsNode)iter.next();	
+			// we should add multiple forms of matching 
+			if (n.getProperty(propertyname).indexOf(searchkey)!=-1) {
+				result.add(n);
+			}
+		}
+		return result;
+	}
+	
 	private boolean matcher(FsNode n, List<String> searchkeys) {
 		String body = n.asIndex();
 		for(Iterator<String> iter = searchkeys.iterator() ; iter.hasNext(); ) {
