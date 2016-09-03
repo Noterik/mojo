@@ -49,16 +49,21 @@ public class FsNode implements Comparable<FsNode>  {
 	private float duration;
 	private String imageBaseUri;
 	private String asindex;
+	private FSList childs =  new FSList();
 	
 	private Map<String, String> properties = new HashMap<String, String>();
 	
+	/*
 	public FsNode() {
 		setName("unknown"); // set to default value should be set later
 	}
+	*/
 	
+	/*
 	public FsNode(String name) {
 		setName(name);
 	}
+	*/
 	
 	public FsNode(String name,String id) {
 		setName(name);
@@ -148,6 +153,23 @@ public class FsNode implements Comparable<FsNode>  {
 			return properties.get(name);
 		}
 		
+	}
+	
+	public FsNode getChild(String id) {
+			return childs.getNodeById(id);
+	}
+	
+	public FSList getChildList() {
+		return childs;
+	}
+	
+	public FSList getNamedChildList(String name) {
+		FSList namechilds = new FSList();
+		for(Iterator<FsNode> i = childs.getNodesByName(name).iterator(); i.hasNext();){
+			FsNode n=i.next();
+			namechilds.addNode(n);
+		}
+		return namechilds;
 	}
 
 	public String getProperty(String name,String def) {
@@ -465,9 +487,13 @@ public class FsNode implements Comparable<FsNode>  {
 		}
 	}
 	
+	public void addNode(FsNode subnode) {
+		childs.addNode(subnode);
+	}
+	
 	public static FsNode parseFsNode(String fsxml) {
 		try {
-			   FsNode newnode = new FsNode();
+			   FsNode newnode = new FsNode("unknown","unknown");
 			   Document doc = DocumentHelper.parseText(fsxml);
 			   if (doc!=null) {
 				   Element rootnode = doc.getRootElement();

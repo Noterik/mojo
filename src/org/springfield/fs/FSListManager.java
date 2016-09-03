@@ -148,7 +148,7 @@ public class FSListManager {
 			if (isMainNode(path)) {
 				for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 					Element node = (Element)iter.next();
-					FsNode nn = new FsNode();
+					FsNode nn = new FsNode("unknown","unknown");
 					if (!node.getName().equals("properties")) {
 						nn.setName(node.getName());
 						nn.setId(node.attribute("id").getText());
@@ -181,7 +181,7 @@ public class FSListManager {
 					Element node = (Element)iter.next();
 					for(Iterator<Node> iter2 = node.nodeIterator(); iter2.hasNext(); ) {
 						Element node2 = (Element)iter2.next();
-						FsNode nn = new FsNode();
+						FsNode nn = new FsNode("unknown","unknown");
 						if (!node2.getName().equals("properties")) {
 							//System.out.println("NAME2="+node2.getName());
 							nn.setName(node2.getName());

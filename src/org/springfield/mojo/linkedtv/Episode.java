@@ -196,7 +196,7 @@ public class Episode {
 				
 				for (Node annotation : nodes) {
 					Element a = (Element) annotation;
-					FsNode result = new FsNode();
+					FsNode result = new FsNode("unknown","unknown");
 					
 					result.setName(a.getName());
 					result.setId(a.attribute("id").getText());
@@ -251,7 +251,7 @@ public class Episode {
 				
 				for (Node chapter : nodes) {
 					Element c = (Element)chapter;					
-					FsNode result = new FsNode();
+					FsNode result = new FsNode("unknown","unknown");
 					
 					result.setName(c.getName());
 					result.setId(c.attribute("id").getText());
@@ -322,7 +322,7 @@ public class Episode {
 					
 					for (Node enrichment : nodes) {
 						Element c = (Element)enrichment;					
-						FsNode result = new FsNode();
+						FsNode result = new FsNode("unknown","unknown");
 						
 						result.setName(c.getName());
 						result.setId(c.attribute("id").getText());
@@ -349,7 +349,7 @@ public class Episode {
 	}
 	
 	private void loadEntityFromProxy(String name,String url) {
-		FsNode result = new FsNode();
+		FsNode result = new FsNode("unknown","unknown");
 
 		String decurl = StringEscapeUtils.unescapeHtml(url);
 

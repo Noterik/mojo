@@ -98,9 +98,25 @@ public class FSList {
 	}
 	
 	public void addNode(FsNode n) {
+		List<FsNode> dub = getNodesById(n.getId());
+		System.out.println("DUB="+dub.size()+" N="+n.getId()+" SIZE="+nodes.size());
+		if (dub.size()>0) {
+		for (int i=dub.size()-1;i>=0;i--) {
+			FsNode c = dub.get(i);
+			System.out.println("DUB CHECK="+c.getName()+" "+n.getName());
+			if (c.getName().equals(n.getName())) {
+				removeNode(c);
+			}
+		}
+		}
+		
 		nodes.add(n);
 		QueryCache = new HashMap<String, List<FsNode>>(); 
 
+	}
+	
+	public void removeNode(FsNode node) {
+		nodes.remove(node);
 	}
 	
 	public FsNode getNode(String path) {
@@ -247,6 +263,18 @@ public class FSList {
 		return result;
 	}
 	
+	public FsNode getNodeById(String id) {
+		// create a sublist based on input
+		List<FsNode> result = new ArrayList<FsNode>();
+		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
+			FsNode n = (FsNode)iter.next();	
+			if (n.getId().equals(id)) {
+				return n;
+			}
+		}
+		return null;
+	}
+	
 	public List<FsNode> getNodesById(String id) {
 		// create a sublist based on input
 		List<FsNode> result = new ArrayList<FsNode>();
@@ -306,7 +334,7 @@ public class FSList {
 		
 		for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 			Element node = (Element)iter.next();
-			FsNode nn = new FsNode();
+			FsNode nn = new FsNode("unknown","unknown");
 			if (!node.getName().equals("properties")) {
 				nn.setName(node.getName());
 				nn.setId(node.attribute("id").getText());

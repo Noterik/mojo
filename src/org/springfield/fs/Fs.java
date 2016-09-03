@@ -48,8 +48,9 @@ public class Fs {
 	private static String[] ignorelist = {"rawvideo","screens"};
 
 	public static FsNode getNode(String path) {
-		FsNode result = new FsNode();
-		result.setPath(path);
+		FsNode result = null;
+		//FsNode result = new FsNode();
+		//result.setPath(path);
 		path += "/properties";
 		String xml = "<fsxml><properties><depth>0</depth></properties></fsxml>";
 		
@@ -67,8 +68,10 @@ public class Fs {
 			Document doc = DocumentHelper.parseText(node);
 			for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 				Element p = (Element)iter.next();
-				result.setName(p.getName());
-				result.setId(p.attribute("id").getText());
+				result = new FsNode(p.getName(),p.attribute("id").getText());
+				//result.setName(p.getName(),p.attribute("id").getText());
+				//result.setId(p.attribute("id").getText());
+				result.setPath(path);
 				if (p.attribute("referid")!=null) {
 					String referid = p.attribute("referid").getText();
 					if (referid!=null) result.setReferid(referid);
@@ -185,7 +188,7 @@ public class Fs {
 			if (isMainNode(path)) {
 				for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 					Element node = (Element)iter.next();
-					FsNode nn = new FsNode();
+					FsNode nn = new FsNode("unknown","unknown");
 					if (!node.getName().equals("properties")) {
 						nn.setName(node.getName());
 						nn.setId(node.attribute("id").getText());
@@ -217,7 +220,7 @@ public class Fs {
 					Element node = (Element)iter.next();
 					for(Iterator<Node> iter2 = node.nodeIterator(); iter2.hasNext(); ) {
 						Element node2 = (Element)iter2.next();
-						FsNode nn = new FsNode();
+						FsNode nn = new FsNode("unknown","unknown");
 						if (!node2.getName().equals("properties")) {
 							nn.setName(node2.getName());
 							nn.setId(node2.attribute("id").getText());
