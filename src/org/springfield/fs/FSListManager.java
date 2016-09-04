@@ -69,7 +69,6 @@ public class FSListManager {
 	
 	public static FSList get(String uri,int depth,boolean cache) {
 		// see if we already have it loaded
-		//System.out.println("GET ="+uri+" "+depth);
 		FSList list = null;
 		if (cache) list = lists.get(uri);
 		if (list==null && uri.indexOf("*")==-1) {
@@ -113,7 +112,6 @@ public class FSListManager {
 	}
 	
 	public static List<FsNode> getNodes(String path,int depth, int start, int limit) {
-		//System.out.println("T="+new Date().getTime());
 		List<FsNode> result = new ArrayList<FsNode>();
 		String limitStr = "";
 		if(limit>0) {
@@ -123,13 +121,11 @@ public class FSListManager {
 		
 		String nodes = "";
 		if (path.indexOf("http://")==-1) {
-//danielfix			nodes = LazyHomer.sendRequestBart("GET",path,xml,"text/xml");
 			ServiceInterface smithers = ServiceManager.getService("smithers");
 			if (smithers==null) {
 				System.out.println("org.springfield.fs.FSListManager : service not found smithers");
 				return null;
 			}
-			//System.out.println("GET MEM="+path);
 			nodes = smithers.get(path,xml,"text/xml");
 			if (nodes!=null) {
 				//System.out.println("NODES MEMORY SIZE="+nodes.length()+" PATH="+path);
@@ -166,7 +162,6 @@ public class FSListManager {
 										Element p3 = (Element)o;
 										String pname = p3.getName();
 										String pvalue = p3.getText();
-										//System.out.println("NODE NAME="+pname+" "+pvalue);
 										nn.setProperty(pname, FsEncoding.decode(pvalue));
 									}
 								}
@@ -183,7 +178,6 @@ public class FSListManager {
 						Element node2 = (Element)iter2.next();
 						FsNode nn = new FsNode("unknown","unknown");
 						if (!node2.getName().equals("properties")) {
-							//System.out.println("NAME2="+node2.getName());
 							nn.setName(node2.getName());
 							nn.setId(node2.attribute("id").getText());
 							nn.setPath(path+"/"+nn.getName()+"/"+nn.getId());
@@ -213,7 +207,6 @@ public class FSListManager {
  		} catch(Exception e) {
  			e.printStackTrace();
  		}
-		//System.out.println("T2="+new Date().getTime());
 		return result;
 	}
 	

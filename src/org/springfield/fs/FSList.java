@@ -99,11 +99,9 @@ public class FSList {
 	
 	public void addNode(FsNode n) {
 		List<FsNode> dub = getNodesById(n.getId());
-		System.out.println("DUB="+dub.size()+" N="+n.getId()+" SIZE="+nodes.size());
 		if (dub.size()>0) {
 		for (int i=dub.size()-1;i>=0;i--) {
 			FsNode c = dub.get(i);
-			System.out.println("DUB CHECK="+c.getName()+" "+n.getName());
 			if (c.getName().equals(n.getName())) {
 				removeNode(c);
 			}
@@ -123,11 +121,9 @@ public class FSList {
 		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
 			FsNode n = (FsNode)iter.next();	
 			if (n.getPath().equals(path)) {
-			//	System.out.println("FOUND="+n.getPath()+" "+path);
 				return n;
 			}
 		}
-		//System.out.println("NOT FOUND="+path);
 		return null;
 	}
 	
