@@ -53,16 +53,100 @@ public class ServiceProxy implements ServiceInterface {
 		return null;
 	}
 	
-	public String put(String path,String value,String mimetype) {
-		return null;
+	public String put(String path,String fsxml,String mimetype) {
+    	    if (auth==null) {
+    		auth = getAuth();
+        	}
+        	String url = "http://"+ipnumber+":"+port+"/"+name+"/proxy/"+path;
+        	if (url.indexOf("?")!=-1) {
+        		url+= "&spw="+auth;
+        	} else {
+        		url+= "?spw="+auth;
+        	}
+        	System.out.println("PROXY URL: " + url);
+        	Response result = HttpHelper.sendRequest("PUT",url,fsxml);
+        	if (result!=null) {
+        		int status = result.getStatusCode();
+        		if (status==200) return result.getResponse();
+        		if (status==410) {
+        			auth = getAuth(); // get the new auth !
+        			url = "http://"+ipnumber+":"+port+"/"+name+"/proxy/"+path;
+        			if (url.indexOf("?")!=-1) {
+        				url+= "&spw="+auth;
+        			} else {
+        				url+= "?spw="+auth;
+        			}
+        			result = HttpHelper.sendRequest("PUT",url,fsxml);
+        			if (result!=null) {
+        				if (status==200) return result.getResponse();
+        			}
+        		}
+        	}
+            return null;
 	}
 	
 	public String post(String path,String fsxml,String mimetype) {
-		return null;
+	    if (auth==null) {
+    		auth = getAuth();
+        	}
+        	String url = "http://"+ipnumber+":"+port+"/"+name+"/proxy/"+path;
+        	if (url.indexOf("?")!=-1) {
+        		url+= "&spw="+auth;
+        	} else {
+        		url+= "?spw="+auth;
+        	}
+        	System.out.println("PROXY URL: " + url);
+        	Response result = HttpHelper.sendRequest("POST",url,fsxml);
+        	if (result!=null) {
+        		int status = result.getStatusCode();
+        		if (status==200) return result.getResponse();
+        		if (status==410) {
+        			auth = getAuth(); // get the new auth !
+        			url = "http://"+ipnumber+":"+port+"/"+name+"/proxy/"+path;
+        			if (url.indexOf("?")!=-1) {
+        				url+= "&spw="+auth;
+        			} else {
+        				url+= "?spw="+auth;
+        			}
+        			result = HttpHelper.sendRequest("POST",url,fsxml);
+        			if (result!=null) {
+        				if (status==200) return result.getResponse();
+        			}
+        		}
+        	}
+            return null;
 	}
 	
-	public String delete(String path,String value,String mimetype) {
-		return null;
+	public String delete(String path,String fsxml,String mimetype) {
+	    if (auth==null) {
+    		auth = getAuth();
+        	}
+        	String url = "http://"+ipnumber+":"+port+"/"+name+"/proxy/"+path;
+        	if (url.indexOf("?")!=-1) {
+        		url+= "&spw="+auth;
+        	} else {
+        		url+= "?spw="+auth;
+        	}
+        	System.out.println("PROXY URL: " + url);
+        	Response result = HttpHelper.sendRequest("DELETE",url,fsxml);
+        	if (result!=null) {
+        		int status = result.getStatusCode();
+        		if (status==200) return result.getResponse();
+        		if (status==410) {
+        			auth = getAuth(); // get the new auth !
+        			url = "http://"+ipnumber+":"+port+"/"+name+"/proxy/"+path;
+        			if (url.indexOf("?")!=-1) {
+        				url+= "&spw="+auth;
+        			} else {
+        				url+= "?spw="+auth;
+        			}
+        			result = HttpHelper.sendRequest("DELETE",url,fsxml);
+        			if (result!=null) {
+        				if (status==200) return result.getResponse();
+        			}
+        		}
+        	}
+            return null;
 	}
 	
 	private String getAuth() {
