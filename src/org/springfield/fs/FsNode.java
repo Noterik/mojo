@@ -159,6 +159,10 @@ public class FsNode implements Comparable<FsNode>  {
 			return childs.getNodeById(id);
 	}
 	
+	public void removeChild(FsNode node) {
+		childs.removeNode(node);
+	}
+	
 	public FSList getChildList() {
 		return childs;
 	}
