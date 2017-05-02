@@ -53,17 +53,17 @@ public class FsNode implements Comparable<FsNode>  {
 	
 	private Map<String, String> properties = new HashMap<String, String>();
 	
-	/*
+	@Deprecated
 	public FsNode() {
 		setName("unknown"); // set to default value should be set later
 	}
-	*/
 	
-	/*
+	
+	@Deprecated
 	public FsNode(String name) {
 		setName(name);
 	}
-	*/
+	
 	
 	public FsNode(String name,String id) {
 		setName(name);
@@ -482,12 +482,13 @@ public class FsNode implements Comparable<FsNode>  {
 	
 	public FsNode getParentNode() {
 		if (isMainNode()) {
-			String parpath  = path.substring(0,path.lastIndexOf('/'));
-			return Fs.getNode(parpath);
+		    String parpath  = path.substring(0,path.lastIndexOf('/'));
+		    return Fs.getNode(parpath);
 		} else {
-			String parpath  = path.substring(0,path.lastIndexOf('/'));
-			parpath = parpath.substring(0,parpath.lastIndexOf('/'));
-			return Fs.getNode(parpath);
+		    String parpath  = path.substring(0,path.lastIndexOf('/'));			
+		    parpath = parpath.substring(0,parpath.lastIndexOf('/'));
+			
+		    return Fs.getNode(parpath);
 		}
 	}
 	

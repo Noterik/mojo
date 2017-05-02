@@ -51,7 +51,7 @@ public class Fs {
 		FsNode result = null;
 		//FsNode result = new FsNode();
 		//result.setPath(path);
-		path += "/properties";
+		//path += "/properties";
 		String xml = "<fsxml><properties><depth>0</depth></properties></fsxml>";
 		
 		ServiceInterface smithers = ServiceManager.getService("smithers");
