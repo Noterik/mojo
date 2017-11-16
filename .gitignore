@@ -1,5 +1,3 @@
 # ignore bin directories
 bin/
 
-#ignore build directories
-build/
