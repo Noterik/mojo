@@ -1,3 +1,4 @@
 # ignore bin directories
 bin/
 
+*.jar

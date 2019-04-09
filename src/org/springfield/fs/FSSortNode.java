@@ -44,6 +44,38 @@ public class FSSortNode implements Comparable<FSSortNode> {
 	public int compareTo(FSSortNode n) throws ClassCastException {
 		 if (direction.equals("up")) { 
 			 return sortfield.compareTo(n.sortfield);
+		 } else if (direction.equals("int_up")) {
+			 Integer a, b;
+			 
+			 try {
+				 a = Integer.parseInt(sortfield);
+			 } catch (NumberFormatException e) {
+				 a = 0;
+			 }
+			 
+			 try {
+				 b = Integer.parseInt(n.sortfield);
+			 } catch (NumberFormatException e) {
+				 b = 0;
+			 }
+
+			 return a.compareTo(b);
+		 } else if (direction.equals("int_down")) {
+			 Integer a, b;
+			 
+			 try {
+				 a = Integer.parseInt(sortfield);
+			 } catch (NumberFormatException e) {
+				 a = 0;
+			 }
+			 
+			 try {
+				 b = Integer.parseInt(n.sortfield);
+			 } catch (NumberFormatException e) {
+				 b = 0;
+			 }
+			 
+			 return b.compareTo(a);
 		 } else {
 			 return n.sortfield.compareTo(sortfield); 
 		 }
