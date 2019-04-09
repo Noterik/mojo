@@ -22,11 +22,13 @@ public class FsEncoding {
 					try {
 						int code = Integer.parseInt(input.substring(pos+1,pos+4));
 						output.append((char)code);
+						input = input.substring(pos+4);
 					} catch(Exception e) {
+						input = input.substring(pos);
 						System.out.println("POS="+pos+"S="+input.substring(pos+1,pos+4)+" E="+input);
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
-					input = input.substring(pos+4);
+
 				}
 				pos = input.indexOf("\\");
 			}
