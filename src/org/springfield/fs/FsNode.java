@@ -451,6 +451,9 @@ public class FsNode implements Comparable<FsNode>  {
 		}
 		
 		xml += "</properties>";
+		
+		//TODO: why are childs here not added?
+		
 		xml += "</" + this.getName() + ">";
 		
 		return xml;
