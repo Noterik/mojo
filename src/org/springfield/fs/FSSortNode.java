@@ -44,7 +44,7 @@ public class FSSortNode implements Comparable<FSSortNode> {
 	public int compareTo(FSSortNode n) throws ClassCastException {
 		 if (direction.equals("up")) { 
 			 return sortfield.compareTo(n.sortfield);
-		 } else if (direction.equals("int_up")) {
+		 } else if (direction.equals("intup") || direction.equals("int_up")) {
 			 Integer a, b;
 			 
 			 try {
@@ -60,8 +60,8 @@ public class FSSortNode implements Comparable<FSSortNode> {
 			 }
 
 			 return a.compareTo(b);
-		 } else if (direction.equals("int_down")) {
-			 Integer a, b;
+		} else if (direction.equals("intdown") || direction.equals("int_down")) {
+			Integer a, b;
 			 
 			 try {
 				 a = Integer.parseInt(sortfield);
@@ -76,7 +76,39 @@ public class FSSortNode implements Comparable<FSSortNode> {
 			 }
 			 
 			 return b.compareTo(a);
-		 } else {
+		} else if (direction.equals("longup") || direction.equals("long_up")) {
+			Long a, b;
+			 
+			 try {
+				 a = Long.parseLong(sortfield);
+			 } catch (NumberFormatException e) {
+				 a = 0l;
+			 }
+			 
+			 try {
+				 b = Long.parseLong(n.sortfield);
+			 } catch (NumberFormatException e) {
+				 b = 0l;
+			 }
+
+			 return a.compareTo(b);  
+		} if (direction.equals("longdown") || direction.equals("long_down")) {
+			Long a, b;
+			 
+			 try {
+				 a = Long.parseLong(sortfield);
+			 } catch (NumberFormatException e) {
+				 a = 0l;
+			 }
+			 
+			 try {
+				 b = Long.parseLong(n.sortfield);
+			 } catch (NumberFormatException e) {
+				 b = 0l;
+			 }
+			 
+			 return b.compareTo(a);
+		} else {
 			 return n.sortfield.compareTo(sortfield); 
 		 }
 	}
