@@ -48,10 +48,13 @@ public class Fs {
 	private static String[] ignorelist = {"rawvideo","screens"};
 
 	public static FsNode getNode(String path) {
+		String pathWithProperties = path;
 		FsNode result = null;
 		//FsNode result = new FsNode();
 		//result.setPath(path);
-		//path += "/properties";
+		if (!pathWithProperties.endsWith("/properties")) {
+			pathWithProperties += "/properties";
+		}
 		String xml = "<fsxml><properties><depth>0</depth></properties></fsxml>";
 		
 		ServiceInterface smithers = ServiceManager.getService("smithers");
@@ -59,7 +62,7 @@ public class Fs {
 			System.out.println("org.springfield.fs.Fs : service not found smithers");
 			return null;
 		}
-		String node = smithers.get(path,xml,"text/xml");
+		String node = smithers.get(pathWithProperties,xml,"text/xml");
 				
 		if (node.indexOf("<error id=\"404\">")!=-1) {
 			return null; // node not found
@@ -71,6 +74,7 @@ public class Fs {
 				result = new FsNode(p.getName(),p.attribute("id").getText());
 				//result.setName(p.getName(),p.attribute("id").getText());
 				//result.setId(p.attribute("id").getText());
+				//here we don't want the /properties to be appended, as this causes issues with determining the parent node
 				result.setPath(path);
 				if (p.attribute("referid")!=null) {
 					String referid = p.attribute("referid").getText();
