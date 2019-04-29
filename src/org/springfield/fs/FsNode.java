@@ -115,6 +115,7 @@ public class FsNode implements Comparable<FsNode>  {
 	}
 	
 	public void setProperty(String name,String value) {
+		if (value == null) { value = ""; }
 		properties.put(name, value);
 		if (name.equals("starttime")) {
 			starttime = Float.parseFloat(value);
