@@ -267,6 +267,8 @@ public class Fs {
 		
 		String postpath = path+"/properties/"+name;
 		// danielfix LazyHomer.sendRequest("PUT",postpath,value,"text/xml");
+		//for domain model we need to encode utf-8 for the database
+		value = FsEncoding.encode(value);
 		String node = smithers.put(postpath,value,"text/xml");
 	}
 	

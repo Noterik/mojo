@@ -24,7 +24,10 @@ public class FsEncoding {
 						output.append((char)code);
 						input = input.substring(pos+4);
 					} catch(Exception e) {
-						input = input.substring(pos);
+						//seems like we can't parse the character, treat as normal character \
+						//this prevent infinite loops
+						output.append(input.substring(0, 1));
+						input = input.substring(pos+1);
 						System.out.println("POS="+pos+"S="+input.substring(pos+1,pos+4)+" E="+input);
 						//e.printStackTrace();
 					}
