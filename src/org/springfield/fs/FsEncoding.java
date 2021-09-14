@@ -1,5 +1,11 @@
 package org.springfield.fs;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 
 public class FsEncoding {
 	
@@ -38,6 +44,8 @@ public class FsEncoding {
 			output.append(input);
 			String outs=output.toString();
 			//System.out.println("decode out="+outs);
+			outs = fixMalformedUTF(outs);
+			
 			return outs;
 		} else {
 			return input;
@@ -45,6 +53,8 @@ public class FsEncoding {
 	}	
 	
 	public static String encode(String input) {
+		input = fixMalformedUTF(input);
+		
 		StringBuffer output = new StringBuffer("");
 		for (int i = 0; i < input.length(); i++) {
 			int code = (int) input.charAt(i);
@@ -81,4 +91,23 @@ public class FsEncoding {
 		}
 		return output.toString();
 	}
-}
+	
+	public static String fixMalformedUTF(String input) {
+		CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+		decoder.onMalformedInput(CodingErrorAction.IGNORE);
+        decoder.onUnmappableCharacter(CodingErrorAction.IGNORE);
+        
+        String output = input;
+        
+        try {
+        
+        	output = decoder.decode(ByteBuffer.wrap(input.getBytes("UTF-8"))).toString();
+        } catch (CharacterCodingException e) {
+        	System.out.println("Character coding exception on: "+input);
+        } catch (UnsupportedEncodingException e) {
+        	System.out.println("Unsupported coding exception on: "+input);
+        }
+        
+        return output;
+	}
+ }
