@@ -460,7 +460,7 @@ public class FsNode implements Comparable<FsNode>  {
 		return xml;
 	}
 	
-	public String asIndex() {
+	public synchronized String asIndex() {
 		if (asindex!=null) return asindex;
 		
 		StringBuffer buf  = new StringBuffer();
