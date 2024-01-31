@@ -60,7 +60,11 @@ public class FSListManager {
 		FSList list = null;
 		if (cache) list = lists.get(uri);
 		if (list==null && uri.indexOf("*")==-1) {
-			List<FsNode> l=getNodes(uri,2,0,0);
+			int neededdepth = 2; // default for subnodes
+			if (isMainNode(uri)) {
+				neededdepth = 1; // we only need 1 depth since we are a main mode list
+			}
+			List<FsNode> l=getNodes(uri,neededdepth,0,0); // daniel 30 jan 2024 why is this number 2 ?
 			list = new FSList(uri,l);
 			lists.put(uri, list);
 		}
@@ -80,7 +84,11 @@ public class FSListManager {
 	}
 	
 	public static FSList add(String uri, FSList biglist) {
-		List<FsNode> nodes=getNodes(uri,2,0,0);
+		int neededdepth = 2; // default for subnodes
+		if (isMainNode(uri)) {
+			neededdepth = 1; // we only need 1 depth since we are a main mode list
+		}
+		List<FsNode> nodes=getNodes(uri,neededdepth,0,0); //  // daniel 30 jan 2024 why is this number 2 ?
 		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
 			FsNode n = (FsNode)iter.next();	
 			n.asIndex(); // small speedup for later
@@ -99,8 +107,11 @@ public class FSListManager {
 		String cacheKey = uri + "/start/"+start+"/limit/"+limit;
 		FSList list = lists.get(cacheKey);
 		if (list==null) {
-			//
-			List<FsNode> l=getNodes(uri,2,start,limit);
+			int neededdepth = 2; // default for subnodes
+			if (isMainNode(uri)) {
+				neededdepth = 1; // we only need 1 depth since we are a main mode list
+			}
+			List<FsNode> l=getNodes(uri,neededdepth,start,limit);  // daniel 30 jan 2024 why is this number 2 ?
 			list = new FSList(uri,l);
 			lists.put(cacheKey, list);
 		}
@@ -112,6 +123,7 @@ public class FSListManager {
 	}
 	
 	public static List<FsNode> getNodes(String path,int depth, int start, int limit) {
+		Long starttime = new Date().getTime();
 		List<FsNode> result = new ArrayList<FsNode>();
 		String limitStr = "";
 		if(limit>0) {
@@ -142,6 +154,7 @@ public class FSListManager {
 			Document doc = DocumentHelper.parseText(nodes);
 
 			if (isMainNode(path)) {
+
 				for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 					Element node = (Element)iter.next();
 					FsNode nn = new FsNode("unknown","unknown");
@@ -171,6 +184,7 @@ public class FSListManager {
 					} else { // so this is the property node
 					}
 				}
+				System.out.println("MAIN NODE PATH="+path+" TIME="+(new Date().getTime()-starttime)+"ms C="+result.size());
 			} else {
 				for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 					Element node = (Element)iter.next();
@@ -202,6 +216,7 @@ public class FSListManager {
 
 						}
 					}
+					System.out.println("SUB NODE PATH="+path+" TIME="+(new Date().getTime()-starttime+"ms")+" C="+result.size());
 				}
 			}
  		} catch(Exception e) {
