@@ -48,10 +48,8 @@ public class Fs {
 	private static String[] ignorelist = {"rawvideo","screens"};
 
 	public static FsNode getNode(String path) {
-		// danger hack 2024 (daniel)
 		FsNode cnode = FsNodeCache.getCachedNode(path);
 		if (cnode!=null) return cnode;
-		// end danger hack
 		
 		
 		String pathWithProperties = path;
@@ -250,16 +248,17 @@ public class Fs {
 	}
 	
 	public static void setProperty(String path,String name,String value) {
-		
 		FsNode current = getNode(path);
 		if (current!=null) {
 			String currentvalue = current.getProperty(name);
-			if (currentvalue!=null && current!=null && currentvalue.equals(value)) {
+		//	if (currentvalue!=null && current!=null && currentvalue.equals(value)) {
+			if (currentvalue!=null && currentvalue.equals(value)) {
 				return;
 			} else {
 				// we also need to set it to memory node now not just smithers below
 				current.setProperty(name, value);
 			}
+
 		}
 		
 		ServiceInterface smithers = ServiceManager.getService("smithers");
