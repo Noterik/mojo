@@ -21,7 +21,7 @@
 
 package org.springfield.fs;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -48,10 +48,14 @@ public class Fs {
 	private static String[] ignorelist = {"rawvideo","screens"};
 
 	public static FsNode getNode(String path) {
+		// danger hack 2024 (daniel)
+		FsNode cnode = FsNodeCache.getCachedNode(path);
+		if (cnode!=null) return cnode;
+		// end danger hack
+		
+		
 		String pathWithProperties = path;
 		FsNode result = null;
-		//FsNode result = new FsNode();
-		//result.setPath(path);
 		if (!pathWithProperties.endsWith("/properties")) {
 			pathWithProperties += "/properties";
 		}
@@ -72,9 +76,6 @@ public class Fs {
 			for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 				Element p = (Element)iter.next();
 				result = new FsNode(p.getName(),p.attribute("id").getText());
-				//result.setName(p.getName(),p.attribute("id").getText());
-				//result.setId(p.attribute("id").getText());
-				//here we don't want the /properties to be appended, as this causes issues with determining the parent node
 				result.setPath(path);
 				if (p.attribute("referid")!=null) {
 					String referid = p.attribute("referid").getText();
@@ -88,10 +89,6 @@ public class Fs {
 							if (p3 instanceof Element) {
 								String pname = ((Element)p3).getName();
 								String pvalue = ((Element)p3).getText();
-								if (pvalue.indexOf("Solistai Laima")!=-1) {
-									System.out.println("D1="+pvalue);
-									System.out.println("D2="+FsEncoding.decode(pvalue));
-								}
 								result.setProperty(pname,FsEncoding.decode(pvalue));
 							} else {
 								
@@ -103,10 +100,12 @@ public class Fs {
  		} catch(Exception e) {
  			e.printStackTrace();
  		}
+ 		FsNodeCache.setCachedNode(path, result);
 		return result;		
 	}
 	
 	public static boolean deleteNode(String path){
+ 		FsNodeCache.removeCachedNode(path);
 		String xml = "<fsxml><properties><depth>0</depth></properties></fsxml>";
 		ServiceInterface smithers = ServiceManager.getService("smithers");
 		if (smithers==null) {
@@ -118,7 +117,7 @@ public class Fs {
 	}
 	
 	public static boolean isMainNode(String path) {
-		//discard trailing slash
+		//discard trailing slash NEEDFIX
 		if (path.length() > 0 && path.substring(path.length()-1).equals("/")) {
 			path = path.substring(0, path.length()-1);
 		}
@@ -131,8 +130,7 @@ public class Fs {
 		//results can only be given for main parent nodes
 		if (!isMainNode(path)) {
 			return -1;
-		}
-		
+		}		
 		String xml = "<fsxml><properties>"
 				+ "<depth>0</depth>"
 				+ "<start>0</start>"
@@ -184,8 +182,6 @@ public class Fs {
 			return null; // node not found
 		}
 		
-		LOG.debug("nodes "+nodes);
-		
  		try { 
 			Document doc = DocumentHelper.parseText(nodes);		
 			
@@ -219,7 +215,6 @@ public class Fs {
 					}
 				}
 			} else {
-				//System.out.println("IS SUBNODE");
 				for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 					Element node = (Element)iter.next();
 					for(Iterator<Node> iter2 = node.nodeIterator(); iter2.hasNext(); ) {
@@ -238,10 +233,6 @@ public class Fs {
 											Element p3 = (Element)o;
 											String pname = p3.getName();
 											String pvalue = p3.getText();
-											if (pvalue.indexOf("Solistai Laima")!=-1) {
-												System.out.println("D1="+pvalue);
-												System.out.println("D2="+FsEncoding.decode(pvalue));
-											}
 											nn.setProperty(pname, FsEncoding.decode(pvalue));
 										}
 									}
@@ -259,6 +250,18 @@ public class Fs {
 	}
 	
 	public static void setProperty(String path,String name,String value) {
+		
+		FsNode current = getNode(path);
+		if (current!=null) {
+			String currentvalue = current.getProperty(name);
+			if (currentvalue!=null && current!=null && currentvalue.equals(value)) {
+				return;
+			} else {
+				// we also need to set it to memory node now not just smithers below
+				current.setProperty(name, value);
+			}
+		}
+		
 		ServiceInterface smithers = ServiceManager.getService("smithers");
 		if (smithers==null) {
 			System.out.println("org.springfield.fs.Fs : service not found smithers");
@@ -266,10 +269,16 @@ public class Fs {
 		}
 		
 		String postpath = path+"/properties/"+name;
-		// danielfix LazyHomer.sendRequest("PUT",postpath,value,"text/xml");
 		//for domain model we need to encode utf-8 for the database
 		value = FsEncoding.encode(value);
-		String node = smithers.put(postpath,value,"text/xml");
+		long st = new Date().getTime();
+		smithers.put(postpath,value,"text/xml");
+		System.out.println("SET PRO="+(new Date().getTime()-st)+" path="+path+" name="+name+" v="+value);
+	}
+	
+	public static void setPropertyAnon(String path,String name,String value) {
+		FsNode cnode = FsNodeCache.getCachedNode(path);
+		if (cnode!=null) cnode.setProperty(name, value);
 	}
 	
 
@@ -279,7 +288,6 @@ public class Fs {
 		body += "</fsxml>";
 		if (insertpath.endsWith("/")) insertpath = insertpath.substring(0,insertpath.length()-1); // remove last '/' if attached
 
-		//System.out.println("SAVE NODE = "+node.getPath()+" "+node.getName()+" "+node.getId()+" "+body);
 		ServiceInterface smithers = ServiceManager.getService("smithers");
 		if (smithers==null) {
 			System.out.println("org.springfield.fs.Fs : service not found smithers");
@@ -331,29 +339,21 @@ public class Fs {
 		body+="<properties>";
 		body+="</properties>";
 		body+="</fsxml>";
-		System.out.println("PATH="+path);
-		System.out.println("BODY3="+body);
-		//String result = LazyHomer.sendRequestBart("POST",currentpath,body,"text/xml");
 		String result = smithers.post(path,body,"application/fscommand");
-		System.out.println("R="+result);
 		FSList list = new FSList();
 		try {
 			Document doc = DocumentHelper.parseText(result);
 			if (doc!=null) {
 				   for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {     
 					   Element node = (Element)iter.next();
-					   System.out.println("PAR NAME="+node.getName());
 					   String parentpath = node.getText();
-					   System.out.println("PAR2 NAME="+parentpath);
 					   FsNode parent = Fs.getNode(parentpath);
-					   System.out.println("PAR3b NAME="+parent);
 					   if (parent!=null) {
 						   list.addNode(parent);
 					   } else {
 						  System.out.println("Mojo : can't load refering node "+parentpath); 
 					   }
 				   }
-				   System.out.println("PAR4 NAME="+list.size());
 				   return list;
 			}
 		} catch(Exception e) {
