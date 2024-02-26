@@ -59,14 +59,14 @@ public class MonitorManager {
 	public static void reportTimes() {
 	    String body="<!DOCTYPE html>";
 	    body+="<html><head><link rel=\"stylesheet\" href=\"css/times.css\"></head><body>";
-	    body+="<table><tr><th>name</th><th>total</th><th>10 buckets</th></tr>";
+	    body+="<table><tr><th>name</th><th>total</th><th>10 buckets</th><th>20/50/100 avg</tr>";
 		for (Map.Entry<String, MonitorAction> entry : actions.entrySet()) {
 		    MonitorAction a = entry.getValue();
-		    body+="<tr><td>"+a.getName()+"</td><td>"+a.getAvgTime()+"("+a.getStartCounter()+"/"+a.getEndCounter()+")</td><td>"+a.getBucketString()+"</td></tr>";
+		    body+="<tr><td>"+a.getName()+"</td><td>"+a.getAvgTime()+"("+a.getStartCounter()+"/"+a.getEndCounter()+")</td><td>"+a.getBucketString()+"</td><td>"+a.getAvgTimesString()+"</td></tr>";
 		}
-	    body+="<tr><th>cache</th><th>total/hit/size</th><th>hitrate</th></tr>";
-		body+="<tr><td>get node</td><td> C="+FsNodeCache.getTotalRequests()+" H="+FsNodeCache.getHitRequests()+" S="+FsNodeCache.size()+"</td><td>%="+FsNodeCache.getHitRate()+"</td></tr>";
-	    body+="<tr><th>timeouts</th><th>starttime</th><th>duration</th></tr>";
+	    body+="<tr><th>cache</th><th>total/hit</th><th>size</th><th>hitrate</th></tr>";
+		body+="<tr><td>get node</td><td> C="+FsNodeCache.getTotalRequests()+" H="+FsNodeCache.getHitRequests()+"</td><td>"+FsNodeCache.size()+"</td><td>%="+FsNodeCache.getHitRate()+"</td></tr>";
+	    body+="<tr><th>timeouts</th><th>starttime</th><th>duration</th><th>handler</th></tr>";
 		long now = new Date().getTime();
 		for (Map.Entry<String, MonitorAction> entry : actions.entrySet()) {
 		    MonitorAction a = entry.getValue();
@@ -81,7 +81,7 @@ public class MonitorManager {
 					int seconds = delta % 60;
 					String stime = String.format("%02dh%02dm%02ds", hours, minutes, seconds);
 					if (hours==0) stime = String.format("%02dmin %02dsec", minutes, seconds);
-				    body+="<tr><td>"+a.getName()+"</td><td>"+new Date(time).toLocaleString()+"</td><td>"+stime+"</td></tr>";	
+				    body+="<tr><td>"+a.getName()+"</td><td>"+new Date(time).toLocaleString()+"</td><td>"+stime+"</td><td>--</td></tr>";	
 		    	}
 		    }
 		    

@@ -208,6 +208,211 @@ public class MonitorAction {
 
 		return result;
 	}
+	
+	public String getAvgTimesString() {
+		String result = "";
+
+		int roller = bucket;
+		long t20=0;
+		long t50=0;
+		long t100=0;
+		int f20=0;
+		int f50=0;
+		int f100=0;
+		
+		for (int i=0; i<10;i++) {
+			switch (roller) {
+			case 0 : 
+				if (ec0==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt0/ec0);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 1 : 
+				if (ec1==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt1/ec1);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 2 : 
+				if (ec2==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt2/ec2);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 3 : 
+				if (ec3==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt3/ec3);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 4 : 
+				if (ec4==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt4/ec4);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 5 : 
+				if (ec5==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt5/ec5);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 6 : 
+				if (ec6==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt6/ec6);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 7 : 
+				if (ec7==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt7/ec7);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 8 : 
+				if (ec8==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt8/ec8);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+				break;
+			case 9 : 
+				if (ec9==0) {
+					// do nothing
+				} else {
+					long r=Math.round(tt9/ec9);
+					if (f20<2) {
+						t20+=r;
+						f20++;
+					}
+					if (f50<5) {
+						t50+=r;
+						f50++;
+					}
+					f100++;
+					t100+=r;
+				}
+			}
+			roller = roller-1;
+			if (roller==-1) roller=9;
+		}
+		if (f20==0) {
+			result+="0";
+		} else {
+			result+=""+Math.round(t20/f20);
+		}
+		if (f50==0) {
+			result+="/0";
+		} else {
+			result+="/"+Math.round(t50/f50);
+		}
+		if (f100==0) {
+			result+="/0";
+		} else {
+			result+="/"+Math.round(t100/f100);
+		}
+
+		return result;
+	}
 
 
 }
