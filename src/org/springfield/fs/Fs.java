@@ -270,9 +270,7 @@ public class Fs {
 		String postpath = path+"/properties/"+name;
 		//for domain model we need to encode utf-8 for the database
 		value = FsEncoding.encode(value);
-		long st = new Date().getTime();
 		smithers.put(postpath,value,"text/xml");
-		System.out.println("SET PRO="+(new Date().getTime()-st)+" path="+path+" name="+name+" v="+value);
 	}
 	
 	public static void setPropertyAnon(String path,String name,String value) {
