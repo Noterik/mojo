@@ -280,6 +280,7 @@ public class Fs {
 	
 
 	public static boolean insertNode(FsNode node,String insertpath) {
+		FsNodeCache.removeCachedNode(insertpath+"/"+node.getName()+"/"+node.getId());
 		String  body = "<fsxml>";
 		body += node.asXML(true);
 		body += "</fsxml>";
