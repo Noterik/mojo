@@ -15,6 +15,7 @@ public class MonitorAction {
 	long sc0=0,sc1=0,sc2=0,sc3=0,sc4=0,sc5=0,sc6=0,sc7=0,sc8=0,sc9=0;
 	long ec0=0,ec1=0,ec2=0,ec3=0,ec4=0,ec5=0,ec6=0,ec7=0,ec8=0,ec9=0;
 	long tt0=0,tt1=0,tt2=0,tt3=0,tt4=0,tt5=0,tt6=0,tt7=0,tt8=0,tt9=0;
+	ArrayList<MonitorError> errors = new ArrayList<MonitorError>();
 
 	public MonitorAction(String n) {
 		name = n;
@@ -86,6 +87,11 @@ public class MonitorAction {
 			token+=(trackerid<<4);
 		}
 		return token;
+	}
+	
+	public void logError(MonitorError ne) {
+		errors.add(ne);
+		System.out.println("mojo: added a error to '"+name+"'");
 	}
 
 	public void logAction(long token) {
