@@ -184,7 +184,6 @@ public class FSListManager {
 					} else { // so this is the property node
 					}
 				}
-				System.out.println("MAIN NODE PATH="+path+" TIME="+(new Date().getTime()-starttime)+"ms C="+result.size());
 			} else {
 				for(Iterator<Node> iter = doc.getRootElement().nodeIterator(); iter.hasNext(); ) {
 					Element node = (Element)iter.next();
@@ -216,7 +215,6 @@ public class FSListManager {
 
 						}
 					}
-					System.out.println("SUB NODE PATH="+path+" TIME="+(new Date().getTime()-starttime+"ms")+" C="+result.size());
 				}
 			}
  		} catch(Exception e) {
